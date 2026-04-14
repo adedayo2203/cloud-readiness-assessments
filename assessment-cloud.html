@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Cloud Optimization Assessment — ActivEdge Technologies</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@300;400;500;600&display=swap');
+:root{--navy:#0a1628;--navy-mid:#112240;--navy-light:#1a3460;--teal:#00c6a7;--gold:#f5a623;--white:#f0f4ff;--muted:#7b90b8;--card-bg:rgba(17,34,64,0.8);--border:rgba(245,166,35,0.2);}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Space Grotesk',sans-serif;background:var(--navy);color:var(--white);min-height:100vh;}
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(245,166,35,0.025) 1px,transparent 1px),linear-gradient(90deg,rgba(245,166,35,0.025) 1px,transparent 1px);background-size:60px 60px;pointer-events:none;z-index:0;}
+.top-bar{position:sticky;top:0;z-index:100;background:rgba(10,22,40,0.95);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:14px 0;}
+.top-inner{max-width:1200px;margin:0 auto;padding:0 24px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;}
+.logo-wrap{display:flex;align-items:center;gap:12px;}
+.logo-icon{width:40px;height:40px;background:linear-gradient(135deg,var(--gold),#e8940a);border-radius:10px;display:flex;align-items:center;justify-content:center;font-family:'Sora',sans-serif;font-weight:800;font-size:14px;color:#1a1a1a;}
+.logo-name{font-family:'Sora',sans-serif;font-weight:700;font-size:15px;color:#fff;}
+.logo-sub{font-size:10px;color:var(--gold);letter-spacing:1.5px;text-transform:uppercase;}
+.client-badge{display:flex;align-items:center;gap:10px;padding:8px 16px;background:var(--card-bg);border:1px solid var(--border);border-radius:50px;font-size:12px;}
+.progress-bar-wrap{background:rgba(245,166,35,0.06);border-bottom:1px solid var(--border);padding:12px 0;}
+.progress-inner{max-width:1200px;margin:0 auto;padding:0 24px;}
+.progress-info{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-bottom:8px;}
+.progress-track{height:6px;background:rgba(245,166,35,0.1);border-radius:99px;overflow:hidden;}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--gold),#ffcc55);border-radius:99px;transition:width 0.5s ease;}
+.section-nav{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;}
+.sec-pill{padding:5px 14px;border-radius:20px;font-size:11px;letter-spacing:0.5px;cursor:pointer;border:1px solid transparent;transition:all 0.2s;}
+.sec-pill.done{background:rgba(245,166,35,0.15);border-color:rgba(245,166,35,0.4);color:var(--gold);}
+.sec-pill.active{background:var(--gold);color:var(--navy);font-weight:700;}
+.sec-pill.pending{background:rgba(255,255,255,0.04);border-color:rgba(255,255,255,0.08);color:var(--muted);}
+.main-wrap{max-width:1200px;margin:0 auto;padding:40px 24px;}
+.section-header{margin-bottom:32px;}
+.section-tag{display:inline-flex;align-items:center;gap:8px;padding:5px 16px;border-radius:20px;background:rgba(245,166,35,0.1);border:1px solid rgba(245,166,35,0.25);font-size:11px;letter-spacing:1.5px;color:var(--gold);text-transform:uppercase;margin-bottom:16px;}
+.section-title{font-family:'Sora',sans-serif;font-size:28px;font-weight:700;color:#fff;margin-bottom:8px;}
+.section-desc{font-size:15px;color:var(--muted);line-height:1.6;max-width:700px;}
+.section-weight{display:inline-block;padding:4px 12px;border-radius:20px;background:rgba(0,198,167,0.1);border:1px solid rgba(0,198,167,0.3);font-size:12px;color:var(--teal);margin-top:8px;}
+.q-card{background:var(--card-bg);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:28px;margin-bottom:20px;transition:border-color 0.2s;}
+.q-card.answered{border-color:rgba(245,166,35,0.3);}
+.q-num{font-size:11px;letter-spacing:1px;color:var(--muted);text-transform:uppercase;margin-bottom:8px;}
+.q-text{font-size:16px;color:#e0e8ff;line-height:1.5;margin-bottom:6px;font-weight:500;}
+.q-hint{font-size:13px;color:var(--muted);line-height:1.5;margin-bottom:20px;}
+.options-grid{display:grid;gap:10px;}
+.options-grid.cols2{grid-template-columns:repeat(2,1fr);}
+.options-grid.cols1{grid-template-columns:1fr;}
+.opt-btn{padding:14px 18px;background:rgba(10,22,40,0.6);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:var(--muted);font-size:14px;font-family:'Space Grotesk',sans-serif;cursor:pointer;text-align:left;transition:all 0.2s;display:flex;align-items:center;gap:12px;}
+.opt-btn .opt-dot{width:16px;height:16px;border-radius:50%;border:2px solid rgba(255,255,255,0.2);flex-shrink:0;transition:all 0.2s;}
+.opt-btn:hover{background:rgba(245,166,35,0.08);border-color:rgba(245,166,35,0.3);color:#c8d8f0;}
+.opt-btn.selected{background:rgba(245,166,35,0.12);border-color:var(--gold);color:#fff;}
+.opt-btn.selected .opt-dot{background:var(--gold);border-color:var(--gold);}
+.nav-bar{display:flex;justify-content:space-between;align-items:center;padding:32px 0 16px;border-top:1px solid rgba(255,255,255,0.06);margin-top:32px;}
+.btn{padding:14px 28px;border-radius:12px;font-size:15px;font-weight:600;font-family:'Sora',sans-serif;cursor:pointer;transition:all 0.2s;display:inline-flex;align-items:center;gap:8px;}
+.btn-secondary{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:var(--muted);}
+.btn-secondary:hover{background:rgba(255,255,255,0.1);color:#fff;}
+.btn-primary{background:linear-gradient(135deg,var(--gold),#e8940a);border:none;color:var(--navy);box-shadow:0 8px 24px rgba(245,166,35,0.25);}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 12px 32px rgba(245,166,35,0.4);}
+.results-page{display:none;}
+.results-hero{text-align:center;padding:60px 0 40px;}
+.cri-ring{width:180px;height:180px;border-radius:50%;margin:0 auto 32px;position:relative;display:flex;align-items:center;justify-content:center;flex-direction:column;}
+.cri-ring svg{position:absolute;inset:0;transform:rotate(-90deg);}
+.cri-inner{text-align:center;position:relative;z-index:1;}
+.cri-score{font-family:'Sora',sans-serif;font-size:48px;font-weight:800;color:#fff;line-height:1;}
+.cri-label{font-size:12px;color:var(--gold);letter-spacing:1px;text-transform:uppercase;margin-top:4px;}
+.maturity-badge{display:inline-block;padding:10px 28px;border-radius:50px;font-family:'Sora',sans-serif;font-size:18px;font-weight:700;margin-bottom:16px;}
+.mat-initial{background:rgba(255,85,85,0.15);color:#ff9999;border:1px solid rgba(255,85,85,0.3);}
+.mat-foundational{background:rgba(245,166,35,0.15);color:#ffd080;border:1px solid rgba(245,166,35,0.3);}
+.mat-emerging{background:rgba(100,180,255,0.15);color:#aad0ff;border:1px solid rgba(100,180,255,0.3);}
+.mat-advanced{background:rgba(0,198,167,0.15);color:var(--teal);border:1px solid rgba(0,198,167,0.3);}
+.mat-optimized{background:rgba(100,255,200,0.15);color:#80ffcc;border:1px solid rgba(100,255,200,0.3);}
+.domain-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px;margin:40px 0;}
+.domain-card{background:var(--card-bg);border:1px solid rgba(255,255,255,0.06);border-radius:14px;padding:20px 24px;}
+.domain-name{font-size:13px;font-weight:600;color:var(--muted);letter-spacing:0.5px;text-transform:uppercase;margin-bottom:10px;}
+.domain-score-wrap{display:flex;align-items:center;gap:12px;}
+.domain-score-val{font-family:'Sora',sans-serif;font-size:24px;font-weight:700;min-width:52px;}
+.domain-bar{flex:1;height:8px;background:rgba(255,255,255,0.08);border-radius:99px;overflow:hidden;}
+.domain-bar-fill{height:100%;border-radius:99px;transition:width 1s ease;}
+.rec-card{background:var(--card-bg);border:1px solid rgba(255,255,255,0.06);border-radius:14px;padding:24px;margin-bottom:16px;}
+.rec-type{font-size:11px;letter-spacing:1.5px;text-transform:uppercase;font-weight:600;margin-bottom:10px;}
+.rec-type.strength{color:var(--teal);}
+.rec-type.gap{color:var(--gold);}
+.rec-type.rec{color:#aad0ff;}
+.rec-title{font-size:16px;font-weight:600;color:#fff;margin-bottom:8px;}
+.rec-body{font-size:14px;color:var(--muted);line-height:1.7;}
+.cta-block{background:linear-gradient(135deg,rgba(245,166,35,0.1),rgba(26,52,96,0.4));border:1px solid rgba(245,166,35,0.3);border-radius:20px;padding:48px;text-align:center;margin:40px 0;}
+.btn-cta-main{padding:16px 36px;background:linear-gradient(135deg,var(--gold),#e8940a);border:none;border-radius:12px;color:var(--navy);font-family:'Sora',sans-serif;font-size:16px;font-weight:700;cursor:pointer;}
+.btn-cta-sec{padding:16px 36px;background:transparent;border:1px solid var(--border);border-radius:12px;color:#fff;font-family:'Sora',sans-serif;font-size:15px;cursor:pointer;}
+.section-page{display:none;}
+.section-page.active{display:block;}
+.loader{display:none;flex-direction:column;align-items:center;padding:80px 0;gap:24px;}
+.loader.active{display:flex;}
+.spin{width:48px;height:48px;border:3px solid rgba(245,166,35,0.2);border-top-color:var(--gold);border-radius:50%;animation:spin 0.8s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+footer{border-top:1px solid var(--border);padding:24px;text-align:center;font-size:12px;color:#3a5070;margin-top:40px;}
+footer a{color:var(--teal);text-decoration:none;}
+@media(max-width:640px){.options-grid.cols2{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+<div class="top-bar">
+  <div class="top-inner">
+    <div class="logo-wrap">
+      <div class="logo-icon">AE</div>
+      <div>
+        <div class="logo-name">ActivEdge Technologies</div>
+        <div class="logo-sub">Cloud Engineering · Optimization Assessment</div>
+      </div>
+    </div>
+    <div class="client-badge" id="clientBadge">
+      <span style="color:var(--muted)">Assessing:</span>
+      <strong id="clientNameDisplay">—</strong>
+    </div>
+  </div>
+</div>
+<div class="progress-bar-wrap">
+  <div class="progress-inner">
+    <div class="progress-info"><span id="progressLabel">Section 1 of 6</span><span id="progressPct">0% complete</span></div>
+    <div class="progress-track"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+    <div class="section-nav" id="sectionNav"></div>
+  </div>
+</div>
+<div class="main-wrap">
+  <div class="loader" id="loader"><div class="spin"></div><p style="color:var(--muted)">Analysing your cloud optimisation score…</p></div>
+  <div id="assessmentArea"></div>
+  <div class="results-page" id="resultsPage">
+    <div class="results-hero">
+      <div style="font-size:11px;letter-spacing:2px;color:var(--gold);text-transform:uppercase;margin-bottom:16px;">Assessment Complete</div>
+      <h2 style="font-family:'Sora',sans-serif;font-size:36px;font-weight:800;margin-bottom:40px;">Your Cloud Optimisation Report</h2>
+      <div class="cri-ring" id="criRing">
+        <svg viewBox="0 0 180 180"><circle cx="90" cy="90" r="78" fill="none" stroke="rgba(245,166,35,0.12)" stroke-width="12"/><circle cx="90" cy="90" r="78" fill="none" stroke="url(#cg)" stroke-width="12" stroke-linecap="round" stroke-dasharray="490" stroke-dashoffset="490" id="criArc"/><defs><linearGradient id="cg" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#f5a623"/><stop offset="100%" stop-color="#ffdd77"/></linearGradient></defs></svg>
+        <div class="cri-inner"><div class="cri-score" id="criScoreDisplay">0%</div><div class="cri-label">Cloud Optimisation Score</div></div>
+      </div>
+      <div id="maturityBadge" class="maturity-badge">—</div>
+      <p id="maturityDesc" style="color:var(--muted);max-width:600px;margin:0 auto;font-size:15px;line-height:1.6;"></p>
+    </div>
+    <div class="domain-grid" id="domainGrid"></div>
+    <div id="clientRecommendation"></div>
+    <div class="cta-block">
+      <h3>Ready to maximise your cloud value?</h3>
+      <p style="color:var(--muted);margin-bottom:32px;">Our FinOps and cloud architecture specialists are ready to design your optimization roadmap and deliver measurable cost savings.</p>
+      <div style="display:flex;gap:16px;justify-content:center;flex-wrap:wrap;">
+        <button class="btn-cta-main" onclick="submitAssessment()">Submit & Send Report ✓</button>
+        <button class="btn-cta-sec" onclick="window.print()">Print Report</button>
+      </div>
+      <div style="font-size:13px;color:#3a5070;margin-top:16px;" id="submitNote"></div>
+    </div>
+  </div>
+</div>
+<footer>ActivEdge Technologies · <a href="mailto:info@activedgetechnologies.com">info@activedgetechnologies.com</a> · <a href="tel:+2349068444440">+234 906 844 4440</a></footer>
+
+<script>
+const SECTIONS = [
+  {
+    id:'cost', label:'Cost Management', weight:0.22, icon:'💰',
+    title:'Cloud Cost Structure & FinOps Maturity',
+    desc:'Evaluate your current cloud spend visibility, cost governance, and financial operations (FinOps) maturity.',
+    questions:[
+      { id:'c1', text:'How well do you understand your current cloud cost breakdown by service, team, and workload?',
+        opts:['Full visibility — tagged, allocated, and reported per team/project','Partial — some tagging and reporting in place','Limited — aggregate billing only, minimal breakdown','No cost visibility beyond monthly invoice'],
+        scores:[3,2,1,0] },
+      { id:'c2', text:'Do you have a FinOps or cloud cost governance function?',
+        opts:['Yes — dedicated FinOps team with cost accountability processes','Partial — cost reviews conducted periodically','Ad hoc — only reviewed when bills spike','No cost governance function'],
+        scores:[3,2,1,0] },
+      { id:'c3', text:'What percentage of your cloud spend is covered by Reserved Instances or Savings Plans?',
+        opts:['> 60% committed via RI/Savings Plans','30–60% committed','< 30% — mostly on-demand','No Reserved Instances or Savings Plans in use'],
+        scores:[3,2,1,0] },
+      { id:'c4', text:'Do you have budget alerts, anomaly detection, and spending thresholds configured?',
+        opts:['Yes — automated alerts with escalation and auto-remediation','Budget alerts set, manual review on breach','Basic alerts on total bill only','No alerting configured'],
+        scores:[3,2,1,0] },
+      { id:'c5', text:'Do you regularly identify and eliminate cloud waste (idle resources, orphaned storage, oversized VMs)?',
+        opts:['Yes — automated waste detection with weekly reviews','Monthly manual review — some waste identified','Occasional reviews when costs spike','No waste elimination process'],
+        scores:[3,2,1,0] },
+      { id:'c6', text:'Is your cloud tagging strategy consistently enforced across all resources?',
+        opts:['Comprehensive tagging enforced via policy — 95%+ compliance','Tagging partially enforced — some gaps','Tagging attempted but inconsistently applied','No tagging strategy in place'],
+        scores:[3,2,1,0] }
+    ]
+  },
+  {
+    id:'architecture', label:'Architecture', weight:0.20, icon:'🏛️',
+    title:'Cloud Architecture & Modernisation',
+    desc:'Assess how well your workloads are designed for cloud-native performance, resilience, and efficiency.',
+    questions:[
+      { id:'ar1', text:'How would you characterize the majority of your cloud workloads?',
+        opts:['Cloud-native / microservices architecture — containers and serverless','Mix — some refactored, some lifted-and-shifted','Primarily lift-and-shift with minimal redesign','Mostly legacy applications running on cloud VMs with no optimization'],
+        scores:[3,2,1,0] },
+      { id:'ar2', text:'Have you conducted an AWS Well-Architected / Azure Well-Architected Review recently?',
+        opts:['Yes — formal review within last 12 months with remediation plan','Conducted previously — some items resolved','Partially completed — informal review only','Never conducted'],
+        scores:[3,2,1,0] },
+      { id:'ar3', text:'Do you leverage auto-scaling and elasticity for variable workloads?',
+        opts:['Yes — auto-scaling configured across all eligible workloads','Partially — some workloads auto-scale','Manually adjusted when needed','Fixed sizing — no auto-scaling in place'],
+        scores:[3,2,1,0] },
+      { id:'ar4', text:'How do you manage data storage tiers and lifecycle policies?',
+        opts:['Automated lifecycle policies — data tiered by age and access frequency','Manual tiering — reviewed periodically','Some storage tiered but inconsistently managed','No storage lifecycle management'],
+        scores:[3,2,1,0] },
+      { id:'ar5', text:'Do you use serverless, managed services, or PaaS to reduce operational overhead?',
+        opts:['Extensively — serverless/PaaS for most new workloads','Moderately — selected use cases only','Minimal usage — mostly IaaS VMs','Not using PaaS or serverless'],
+        scores:[3,2,1,0] },
+      { id:'ar6', text:'Do you have a multi-region or high-availability architecture for critical workloads?',
+        opts:['Full multi-region with automated failover for Tier 1 services','Zonal redundancy within a single region','Single availability zone with manual failover','No redundancy — single point of failure risk'],
+        scores:[3,2,1,0] }
+    ]
+  },
+  {
+    id:'security', label:'Security & Governance', weight:0.18, icon:'🛡️',
+    title:'Cloud Security & Governance Maturity',
+    desc:'Review your cloud security posture, identity management, compliance controls, and governance effectiveness.',
+    questions:[
+      { id:'sg1', text:'How mature is your cloud Identity and Access Management (IAM)?',
+        opts:['Zero-trust model — MFA enforced, least privilege, PAM, JIT access','Role-based access with MFA — some privilege management','Basic IAM — MFA inconsistent, broad permissions common','Minimal IAM controls — shared accounts or over-privileged users'],
+        scores:[3,2,1,0] },
+      { id:'sg2', text:'Do you have a Cloud Security Posture Management (CSPM) solution in operation?',
+        opts:['Yes — CSPM active with automated compliance reporting and alerting','Security Center/Defender configured but alerts not fully actioned','Some security tooling but no centralized CSPM','No CSPM — security relies on manual reviews'],
+        scores:[3,2,1,0] },
+      { id:'sg3', text:'How do you manage secrets, certificates, and encryption keys?',
+        opts:['Centralised vault (Key Vault/Secrets Manager) with rotation policies','Secrets managed in vault — rotation manual','Mix of vault and hardcoded/config secrets','Secrets stored in code or configuration files'],
+        scores:[3,2,1,0] },
+      { id:'sg4', text:'Do you have cloud compliance monitoring aligned to regulatory requirements?',
+        opts:['Continuous compliance monitoring with automated evidence collection','Periodic audits — mostly manual evidence gathering','Compliance reviews conducted pre-audit only','No formal cloud compliance monitoring'],
+        scores:[3,2,1,0] },
+      { id:'sg5', text:'How effective is your cloud governance — policies, guardrails, and landing zones?',
+        opts:['Comprehensive — Azure Policy/SCPs enforce guardrails across all accounts','Governance framework exists with some gaps','Basic policies — inconsistently applied','No formal governance framework or landing zone'],
+        scores:[3,2,1,0] }
+    ]
+  },
+  {
+    id:'operations', label:'Operations', weight:0.18, icon:'⚡',
+    title:'Cloud Operations & Reliability',
+    desc:'Evaluate your operational excellence, observability, incident management, and automation maturity.',
+    questions:[
+      { id:'op1', text:'How would you describe your cloud observability posture?',
+        opts:['Full-stack observability — metrics, logs, traces with SLO/SLA monitoring','Good monitoring — dashboards and alerts in place, some gaps','Basic monitoring — reactive alerting only','Limited observability — issues identified by end-user reports'],
+        scores:[3,2,1,0] },
+      { id:'op2', text:'How mature are your CI/CD pipelines and deployment automation?',
+        opts:['Fully automated — CI/CD for all workloads with policy gates and rollback','CI/CD for most services — some manual deployments remain','Partial automation — key services only','Mostly manual deployments with limited scripting'],
+        scores:[3,2,1,0] },
+      { id:'op3', text:'Do you practise cloud chaos engineering or resiliency testing?',
+        opts:['Regular resiliency testing including game days and chaos experiments','Disaster recovery tested annually','DR plan exists but rarely tested','No resiliency or DR testing conducted'],
+        scores:[3,2,1,0] },
+      { id:'op4', text:'How do you manage infrastructure — IaC or manual?',
+        opts:['100% IaC — all resources managed via Terraform/Bicep/CDK with state management','> 70% IaC — some manual resources remain','< 50% IaC — significant manual drift','Mostly manual — no meaningful IaC adoption'],
+        scores:[3,2,1,0] },
+      { id:'op5', text:'Do you have defined SLOs/SLAs for your cloud-hosted services?',
+        opts:['Formal SLOs with error budgets and automated SLA reporting','SLAs defined but tracking is manual','Informal targets — no formal measurement','No service level objectives defined'],
+        scores:[3,2,1,0] }
+    ]
+  },
+  {
+    id:'data', label:'Data & Analytics', weight:0.12, icon:'📊',
+    title:'Data Platform & Cloud-Native Analytics',
+    desc:'Assess your cloud data architecture, analytics maturity, and data management efficiency.',
+    questions:[
+      { id:'da1', text:'How would you describe your current cloud data architecture?',
+        opts:['Modern data platform — lakehouse/data mesh with self-service analytics','Centralised data warehouse with reporting layer','Ad hoc — data siloed per application team','No formal cloud data architecture'],
+        scores:[3,2,1,0] },
+      { id:'da2', text:'Do you use cloud-native managed database services (vs. self-managed DB on VMs)?',
+        opts:['Primarily managed PaaS databases — minimal self-managed DB VMs','Mix — some managed services, some DB VMs','Mostly self-managed databases on VMs','All databases run on unmanaged VMs'],
+        scores:[3,2,1,0] },
+      { id:'da3', text:'How do you manage data lifecycle, archival, and compliance?',
+        opts:['Automated lifecycle management with compliant archival policies','Manual lifecycle management with defined schedules','Ad hoc archival when storage costs escalate','No data lifecycle or archival process'],
+        scores:[3,2,1,0] },
+      { id:'da4', text:'Do you leverage cloud analytics or AI/ML capabilities?',
+        opts:['Active use of cloud analytics, BI, and ML services in production','Piloting analytics or ML in selected areas','Evaluating — no production usage yet','No cloud analytics or ML adoption'],
+        scores:[3,2,1,0] }
+    ]
+  },
+  {
+    id:'maturity', label:'Cloud Maturity', weight:0.10, icon:'🚀',
+    title:'Organisational Cloud Maturity & Innovation',
+    desc:'Evaluate your overall cloud adoption maturity, strategic posture, and capacity for continuous cloud improvement.',
+    questions:[
+      { id:'m1', text:'How embedded is cloud thinking in your engineering and product teams?',
+        opts:['Cloud-first culture — cloud-native decisions are the default','Cloud awareness high — teams trained and cloud-confident','Mixed — cloud knowledge concentrated in a few individuals','Limited — cloud seen as infrastructure team responsibility only'],
+        scores:[3,2,1,0] },
+      { id:'m2', text:'Do you have a Cloud Centre of Excellence (CCoE) or cloud governance committee?',
+        opts:['Active CCoE with published standards, guardrails, and best practices','Informal cloud champions group — some shared standards','No formal CCoE — cloud practices vary by team','No cloud governance or shared practices'],
+        scores:[3,2,1,0] },
+      { id:'m3', text:'How would you assess your overall cloud cost-to-value ratio?',
+        opts:['High value — cloud clearly delivering measurable business outcomes','Moderate — value recognised but optimisation opportunities remain','Value unclear — costs rising faster than business benefit','Concerns — cloud spending feels out of control relative to value'],
+        scores:[3,2,1,0] },
+      { id:'m4', text:'Do you have a documented cloud strategy and multi-year cloud roadmap?',
+        opts:['Active cloud strategy with annual reviews and executive sponsorship','Cloud strategy exists — partially executed','Informal roadmap — no formal cloud strategy document','No cloud strategy or roadmap'],
+        scores:[3,2,1,0] }
+    ]
+  }
+];
+
+const answers = {};
+let currentSection = 0;
+const params = new URLSearchParams(window.location.search);
+const clientCompany = params.get('company') || sessionStorage.getItem('ae_company') || 'Your Organisation';
+const clientPhone = params.get('phone') || sessionStorage.getItem('ae_phone') || '';
+const clientEmail = params.get('email') || sessionStorage.getItem('ae_email') || '';
+document.getElementById('clientNameDisplay').textContent = clientCompany;
+
+function buildSections() {
+  const area = document.getElementById('assessmentArea');
+  const nav = document.getElementById('sectionNav');
+  SECTIONS.forEach((sec, si) => {
+    const page = document.createElement('div');
+    page.className = 'section-page' + (si === 0 ? ' active' : '');
+    page.id = 'sec_' + sec.id;
+    let html = `<div class="section-header"><div class="section-tag">${sec.icon} Section ${si+1} of ${SECTIONS.length}</div><div class="section-title">${sec.title}</div><div class="section-desc">${sec.desc}</div><div class="section-weight">Weight: ${Math.round(sec.weight*100)}% of Score</div></div>`;
+    sec.questions.forEach((q, qi) => {
+      const cols = q.opts.length <= 2 ? 'cols1' : 'cols2';
+      html += `<div class="q-card" id="qcard_${q.id}"><div class="q-num">Question ${qi+1} of ${sec.questions.length}</div><div class="q-text">${q.text}</div>${q.hint?`<div class="q-hint">💡 ${q.hint}</div>`:''}<div class="options-grid ${cols}">`;
+      q.opts.forEach((opt, oi) => {
+        html += `<button class="opt-btn" onclick="selectAnswer('${q.id}',${oi},'${sec.id}')" id="opt_${q.id}_${oi}"><div class="opt-dot"></div><span>${opt}</span></button>`;
+      });
+      html += `</div></div>`;
+    });
+    html += `<div class="nav-bar">${si>0?`<button class="btn btn-secondary" onclick="goSection(${si-1})">← Previous</button>`:'<div></div>'}${si<SECTIONS.length-1?`<button class="btn btn-primary" onclick="goSection(${si+1})">Next Section →</button>`:`<button class="btn btn-primary" onclick="calculateResults()" style="background:linear-gradient(135deg,#00c6a7,#00a88d);color:#0a1628;">Calculate Optimisation Score →</button>`}</div>`;
+    page.innerHTML = html;
+    area.appendChild(page);
+    const pill = document.createElement('div');
+    pill.className = 'sec-pill ' + (si===0?'active':'pending');
+    pill.id = 'pill_'+sec.id;
+    pill.textContent = sec.label;
+    pill.onclick = () => goSection(si);
+    nav.appendChild(pill);
+  });
+  updateProgress();
+}
+
+function selectAnswer(qId, optIdx, secId) {
+  const sec = SECTIONS.find(s=>s.id===secId);
+  const q = sec.questions.find(q=>q.id===qId);
+  answers[qId] = { score: q.scores[optIdx], optIdx };
+  q.opts.forEach((_,i) => document.getElementById(`opt_${qId}_${i}`).classList.toggle('selected', i===optIdx));
+  document.getElementById('qcard_'+qId).classList.add('answered');
+  updateProgress();
+}
+
+function goSection(idx) {
+  document.getElementById('sec_'+SECTIONS[currentSection].id).classList.remove('active');
+  document.getElementById('pill_'+SECTIONS[currentSection].id).className = 'sec-pill done';
+  currentSection = idx;
+  document.getElementById('sec_'+SECTIONS[idx].id).classList.add('active');
+  document.getElementById('pill_'+SECTIONS[idx].id).className = 'sec-pill active';
+  updateProgress();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function updateProgress() {
+  const total = SECTIONS.reduce((s,sec)=>s+sec.questions.length,0);
+  const done = Object.keys(answers).length;
+  const pct = Math.round(done/total*100);
+  document.getElementById('progressFill').style.width=pct+'%';
+  document.getElementById('progressLabel').textContent=`Section ${currentSection+1} of ${SECTIONS.length}`;
+  document.getElementById('progressPct').textContent=`${pct}% complete (${done}/${total} questions)`;
+}
+
+function calculateResults() {
+  document.getElementById('loader').classList.add('active');
+  document.getElementById('sec_'+SECTIONS[currentSection].id).classList.remove('active');
+  setTimeout(() => {
+    document.getElementById('loader').classList.remove('active');
+    const domainScores={};
+    let criTotal=0;
+    SECTIONS.forEach(sec => {
+      const max=sec.questions.length*3;
+      let earned=0;
+      sec.questions.forEach(q=>{ earned+=(answers[q.id]?.score??0); });
+      const pct=max>0?Math.round(earned/max*100):0;
+      domainScores[sec.id]={label:sec.label,icon:sec.icon,score:pct,weight:sec.weight};
+      criTotal+=pct*sec.weight;
+    });
+    const cri=Math.round(criTotal);
+    renderResults(cri,domainScores);
+  }, 2200);
+}
+
+function getMaturity(cri) {
+  if(cri<=25)return{label:'Initial',cls:'mat-initial',desc:'Significant optimisation gaps exist across your cloud environment. Without structured intervention, cloud costs will continue to grow disproportionate to business value. Immediate action is required.'};
+  if(cri<=50)return{label:'Foundational',cls:'mat-foundational',desc:'Foundational cloud practices are emerging but material inefficiencies remain. A structured FinOps and architecture review programme will unlock significant cost savings and operational improvements.'};
+  if(cri<=70)return{label:'Emerging',cls:'mat-emerging',desc:'Your cloud environment is developing towards efficiency. Several optimization opportunities remain — particularly in FinOps, architecture right-sizing, and governance automation — that will deliver measurable cost and performance gains.'};
+  if(cri<=85)return{label:'Advanced',cls:'mat-advanced',desc:'Your cloud environment demonstrates strong optimisation maturity. With targeted refinements in cost governance, architecture modernisation, and FinOps discipline, you can extract additional value from your cloud investment.'};
+  return{label:'Optimized',cls:'mat-optimized',desc:'Your cloud environment is highly optimised. Focus should shift to continuous improvement, cloud-native innovation, and maximising business outcomes from an already well-governed cloud platform.'};
+}
+
+function getBarColor(score) {
+  if(score>=75)return'#00c6a7';
+  if(score>=50)return'#64b5f6';
+  if(score>=30)return'#f5a623';
+  return'#ff5555';
+}
+
+function renderResults(cri, domainScores) {
+  document.getElementById('resultsPage').style.display='block';
+  window.scrollTo({top:document.getElementById('resultsPage').offsetTop-80,behavior:'smooth'});
+  const arc=document.getElementById('criArc');
+  const offset=490-(cri/100*490);
+  setTimeout(()=>{arc.style.transition='stroke-dashoffset 1.5s ease';arc.style.strokeDashoffset=offset;},100);
+  animateCount(document.getElementById('criScoreDisplay'),0,cri,1500,'%');
+  const mat=getMaturity(cri);
+  document.getElementById('maturityBadge').textContent=mat.label;
+  document.getElementById('maturityBadge').className='maturity-badge '+mat.cls;
+  document.getElementById('maturityDesc').textContent=mat.desc;
+  const grid=document.getElementById('domainGrid');
+  grid.innerHTML='';
+  Object.values(domainScores).forEach(d=>{
+    const color=getBarColor(d.score);
+    grid.innerHTML+=`<div class="domain-card"><div class="domain-name">${d.icon} ${d.label} <span style="color:${color};float:right">${d.score>=75?'✓ Optimised':d.score>=50?'△ Developing':'⚠ Needs Work'}</span></div><div class="domain-score-wrap"><div class="domain-score-val" style="color:${color}">${d.score}%</div><div class="domain-bar"><div class="domain-bar-fill" style="width:${d.score}%;background:${color}"></div></div></div></div>`;
+  });
+  renderClientRecommendation(cri, domainScores, mat);
+}
+
+function animateCount(el,from,to,dur,suffix=''){const start=performance.now();function step(ts){const p=Math.min((ts-start)/dur,1);el.textContent=Math.round(from+(to-from)*(1-Math.pow(1-p,3)))+suffix;if(p<1)requestAnimationFrame(step);}requestAnimationFrame(step);}
+
+function renderClientRecommendation(cri, domainScores, mat) {
+  const sorted=Object.entries(domainScores).sort((a,b)=>b[1].score-a[1].score);
+  const strengths=sorted.filter(d=>d[1].score>=65).slice(0,3);
+  const gaps=sorted.filter(d=>d[1].score<65).sort((a,b)=>a[1].score-b[1].score).slice(0,4);
+  const gapInsights={
+    cost:{gap:'Unoptimised cloud spend without tagging discipline and FinOps governance results in significant cost leakage — often 20–35% of cloud spend is wasted in organisations without a FinOps practice.',cloud_rec:'Implementing a structured FinOps programme with Reserved Instance commitments, automated waste elimination, and chargeback reporting typically delivers 25–40% cost reduction within 6 months.'},
+    architecture:{gap:'Workloads designed for on-premise or lifted without redesign incur unnecessary cost, carry performance risk, and fail to leverage cloud-native capabilities that could improve reliability and reduce operational overhead.',cloud_rec:'Architecture modernisation — including right-sizing, auto-scaling, and migration to PaaS/serverless — reduces compute costs by 30–50% and significantly improves system resilience.'},
+    security:{gap:'Weak cloud security posture — including IAM over-privilege, misconfigured resources, and absent CSPM — creates compliance exposure, breach risk, and reputational liability particularly critical in regulated industries.',cloud_rec:'Implementing a Cloud Security Posture Management programme with automated policy enforcement and zero-trust access controls reduces the cloud attack surface and supports regulatory compliance.'},
+    operations:{gap:'Manual operations, inconsistent infrastructure management, and limited observability increase operational cost, reduce team velocity, and create hidden risk from configuration drift and undetected incidents.',cloud_rec:'Achieving 80%+ IaC coverage, full-stack observability, and automated CI/CD reduces operational costs and significantly accelerates time to resolution when incidents occur.'},
+    data:{gap:'Unmanaged cloud data on over-provisioned VM-based databases results in unnecessary cost, performance degradation, and compliance risk from uncontrolled data growth.',cloud_rec:'Migrating to managed cloud database services with automated lifecycle policies and tiered storage can reduce data platform costs by 30–50% while improving reliability and compliance posture.'},
+    maturity:{gap:'Without a Cloud Centre of Excellence and a formal cloud strategy, cloud adoption becomes fragmented — driving shadow IT, inconsistent practices, and poor cost-to-value outcomes.',cloud_rec:'Establishing a CCoE with published cloud standards, guardrails, and FinOps discipline creates the governance foundation for sustainable, high-value cloud operations.'}
+  };
+  let html=`<div style="margin:40px 0">
+    <h3 style="font-family:'Sora',sans-serif;font-size:20px;font-weight:700;margin-bottom:20px;color:#fff;">📊 Cloud Optimisation Report — Assessment Findings</h3>
+    <div style="background:var(--card-bg);border:1px solid var(--border);border-radius:16px;padding:28px;margin-bottom:24px;">
+      <div style="font-size:13px;letter-spacing:1px;color:var(--gold);text-transform:uppercase;margin-bottom:8px;">1. Cloud Optimisation Score</div>
+      <div style="font-size:32px;font-weight:800;font-family:'Sora',sans-serif;color:#fff;margin-bottom:8px;">${cri}%</div>
+      <div style="color:var(--muted);font-size:14px;line-height:1.6;">${mat.desc}</div>
+    </div>
+    <div style="background:var(--card-bg);border:1px solid var(--border);border-radius:16px;padding:28px;margin-bottom:24px;">
+      <div style="font-size:13px;letter-spacing:1px;color:var(--gold);text-transform:uppercase;margin-bottom:12px;">2. Cloud Maturity Level: ${mat.label}</div>
+      <div style="color:var(--muted);font-size:14px;line-height:1.6;">${mat.desc}</div>
+    </div>`;
+
+  if(strengths.length>0){
+    html+=`<div style="background:var(--card-bg);border:1px solid rgba(0,198,167,0.2);border-radius:16px;padding:28px;margin-bottom:24px;"><div style="font-size:13px;letter-spacing:1px;color:var(--teal);text-transform:uppercase;margin-bottom:16px;">3. Key Strengths</div>`;
+    const sMsg={cost:'Strong cost governance and FinOps maturity — your organisation demonstrates the financial discipline required to sustain and scale cloud efficiently.',architecture:'Cloud architecture demonstrates meaningful modernisation and cloud-native adoption that supports both cost efficiency and resilience.',security:'Cloud security and governance posture is commendable and provides a solid foundation for regulatory compliance.',operations:'Operational maturity — including automation, observability, and deployment discipline — reduces risk and accelerates value delivery.',data:'Cloud data platform maturity enables advanced analytics capability and efficient data management.',maturity:'Organisational cloud maturity and cultural alignment accelerate value realisation from cloud investment.'};
+    strengths.forEach(([id,d])=>{html+=`<div class="rec-card"><div class="rec-type strength">✓ Strength — ${d.icon} ${d.label} (${d.score}%)</div><div class="rec-body">${sMsg[id]||'This domain demonstrates strong cloud optimisation practices.'}</div></div>`;});
+    html+=`</div>`;
+  }
+
+  if(gaps.length>0){
+    html+=`<div style="background:var(--card-bg);border:1px solid rgba(245,166,35,0.2);border-radius:16px;padding:28px;margin-bottom:24px;"><div style="font-size:13px;letter-spacing:1px;color:var(--gold);text-transform:uppercase;margin-bottom:16px;">4. Cost Leakage & Risk Areas</div>`;
+    gaps.forEach(([id,d])=>{
+      const insight=gapInsights[id]||{gap:'This domain presents optimisation gaps that, if addressed, will deliver measurable cost and performance improvements.',cloud_rec:'Targeted optimization in this domain will improve your overall cloud value posture.'};
+      html+=`<div class="rec-card"><div class="rec-type gap">⚠ Optimisation Gap — ${d.icon} ${d.label} (${d.score}%)</div><div class="rec-title">Current Risk / Cost Leakage</div><div class="rec-body" style="margin-bottom:14px;">${insight.gap}</div><div class="rec-title" style="color:var(--teal);">Optimisation Opportunity</div><div class="rec-body">${insight.cloud_rec}</div></div>`;
+    });
+    html+=`</div>`;
+  }
+
+  // Strategic obs
+  const weakDomains=Object.entries(domainScores).filter(([,d])=>d.score<50).map(([,d])=>d.label);
+  const obsMap={'Initial':`${clientCompany}'s cloud environment carries significant optimisation risk across multiple dimensions. Without a structured programme addressing FinOps, security, and architecture, cloud costs will escalate disproportionately to value. ${weakDomains.length>0?`The most critical areas requiring immediate attention are: ${weakDomains.join(', ')}.`:''} ActivEdge recommends a Cloud Optimisation Rapid Assessment followed by a 90-day value recovery sprint.`,'Foundational':`${clientCompany} has cloud foundations in place but substantial efficiency and cost savings are being left unrealised. ${weakDomains.length>0?`Domains showing the most material gap are: ${weakDomains.join(', ')}.`:''} A phased optimisation programme targeting FinOps, architecture right-sizing, and governance automation will deliver 20–35% cloud spend reduction within 12 months.`,'Emerging':`${clientCompany} is on a positive cloud optimisation trajectory. Key opportunities exist to accelerate cost efficiency and governance maturity. ${weakDomains.length>0?`Priority domains include: ${weakDomains.join(', ')}.`:''} With targeted intervention, the organisation is 3–6 months from an Advanced maturity classification.`,'Advanced':`${clientCompany} has achieved a strong cloud optimisation baseline. Refinements in the remaining gap areas — particularly advanced FinOps practices, architecture modernisation, and CCoE formalisation — will unlock the final tier of cloud value.`,'Optimized':`${clientCompany} operates a highly optimised cloud environment with strong governance, security, and cost management disciplines. The strategic focus should shift to cloud-native innovation, AI/ML capability adoption, and continuous cost efficiency through evolving cloud provider capabilities.`};
+  html+=`<div style="background:var(--card-bg);border:1px solid var(--border);border-radius:16px;padding:28px;margin-bottom:24px;"><div style="font-size:13px;letter-spacing:1px;color:#aad0ff;text-transform:uppercase;margin-bottom:12px;">5. Strategic Observation</div><div style="color:var(--muted);font-size:15px;line-height:1.8;">${obsMap[mat.label]||obsMap['Emerging']}</div></div>`;
+
+  // Recs
+  const recsList=[];
+  if(domainScores.cost?.score<65)recsList.push('Establish a Cloud Financial Operations (FinOps) programme with formal tagging governance, cost allocation, and monthly business review cycles to drive spending accountability across all teams and projects.');
+  if(domainScores.architecture?.score<65)recsList.push('Conduct a comprehensive cloud architecture review against the Well-Architected Framework, with a specific focus on right-sizing opportunities, auto-scaling adoption, and migration to managed PaaS services where appropriate.');
+  if(domainScores.security?.score<65)recsList.push('Strengthen cloud security posture through a Zero Trust IAM model, continuous compliance monitoring, and automated policy guardrails — particularly critical given regulatory requirements in African financial and enterprise markets.');
+  if(domainScores.operations?.score<65)recsList.push('Achieve infrastructure-as-code maturity across your cloud environment and establish full-stack observability with defined Service Level Objectives (SLOs) to reduce operational risk and mean-time-to-recovery.');
+  if(domainScores.data?.score<65)recsList.push('Rationalise your cloud data platform through managed database service adoption, automated storage lifecycle management, and data tiering policies — this will reduce storage and compute costs while improving compliance posture.');
+  if(domainScores.maturity?.score<65)recsList.push('Establish a Cloud Centre of Excellence (CCoE) with published architectural standards, shared governance guardrails, and a FinOps accountability model to drive consistent, high-value cloud outcomes across teams.');
+  recsList.push(`Engage ActivEdge Technologies for a Cloud Optimisation Assessment and 90-Day Value Recovery Sprint — our team will deliver a prioritised implementation roadmap that targets measurable cost reduction and performance improvement for ${clientCompany}.`);
+  html+=`<div style="background:var(--card-bg);border:1px solid var(--border);border-radius:16px;padding:28px;margin-bottom:24px;"><div style="font-size:13px;letter-spacing:1px;color:#aad0ff;text-transform:uppercase;margin-bottom:16px;">6. Strategic Recommendations</div>`;
+  recsList.slice(0,6).forEach((r,i)=>{html+=`<div class="rec-card"><div class="rec-type rec">→ Recommendation ${i+1}</div><div class="rec-body" style="color:#e0e8ff;font-size:15px;">${r}</div></div>`;});
+  html+=`</div>`;
+  html+=`<div style="background:linear-gradient(135deg,rgba(245,166,35,0.08),rgba(26,52,96,0.3));border:1px solid rgba(245,166,35,0.25);border-radius:16px;padding:32px;margin-bottom:24px;"><div style="font-size:13px;letter-spacing:1px;color:var(--gold);text-transform:uppercase;margin-bottom:12px;">7. Your Next Step with ActivEdge Technologies</div><div style="color:#e0e8ff;font-size:15px;line-height:1.8;margin-bottom:16px;">Based on your <strong>${mat.label}</strong> cloud maturity level and a score of <strong>${cri}%</strong>, ActivEdge Technologies recommends a structured <strong>Cloud Optimisation Programme</strong> tailored to your environment and business objectives.<br/><br/>Our certified FinOps practitioners and cloud architects will deliver a detailed cost optimisation analysis, architecture improvement roadmap, and a phased implementation plan — with measurable cost savings and business value targets agreed upfront.<br/><br/><em style="color:var(--gold);">"We don't just reduce your cloud bill — we maximise what every Naira in cloud investment delivers."</em></div><div style="display:flex;gap:16px;flex-wrap:wrap;"><a href="mailto:info@activedgetechnologies.com?subject=Cloud Optimisation Follow-up — ${clientCompany}&body=Hello ActivEdge Team,%0A%0AI have completed the Cloud Optimisation Assessment. Please contact me to discuss next steps.%0A%0AOrganisation: ${clientCompany}%0AOptimisation Score: ${cri}%25%0AMaturity: ${mat.label}%0A%0APhone: ${clientPhone}" style="padding:14px 28px;background:linear-gradient(135deg,var(--gold),#e8940a);border-radius:10px;color:var(--navy);font-family:'Sora',sans-serif;font-size:14px;font-weight:700;text-decoration:none;display:inline-block;">📧 Contact ActivEdge</a><a href="tel:+2349068444440" style="padding:14px 28px;background:transparent;border:1px solid var(--border);border-radius:10px;color:#fff;font-family:'Sora',sans-serif;font-size:14px;text-decoration:none;display:inline-block;">📞 +234 906 844 4440</a></div></div></div>`;
+  document.getElementById('clientRecommendation').innerHTML=html;
+  window._assessmentResult={cri,domainScores,maturity:mat.label,clientCompany,clientPhone,clientEmail,timestamp:new Date().toISOString(),type:'cloudopt'};
+  window._adminRec=generateAdminRec(cri,domainScores,mat.label);
+}
+
+function generateAdminRec(cri, ds, maturity) {
+  return {
+    title:`Admin Optimisation Guide — ${clientCompany}`,generatedAt:new Date().toISOString(),
+    cri,maturity,clientCompany,clientPhone,clientEmail,
+    domainScores:Object.fromEntries(Object.entries(ds).map(([k,v])=>[k,v.score])),
+    phases:[
+      {phase:1,name:'FinOps Foundation & Cost Visibility',duration:'4–6 weeks',
+        steps:['Enable comprehensive resource tagging via Azure Policy / AWS Config — enforce cost-centre, project, and environment tags across all resources.','Deploy Azure Cost Management / AWS Cost Explorer dashboards with team-level cost allocation and weekly automated reports.','Configure budget alerts with 80% threshold warnings and anomaly detection notifications.','Identify top 10 cost drivers and categorise spend by service, team, and workload.','Analyse Reserved Instance / Savings Plan coverage — model commitment scenarios to achieve 30–60% compute cost reduction.','Identify and schedule elimination of idle resources, orphaned storage, unattached disks, and over-provisioned VMs.'],
+        tools:['Azure Cost Management + Billing','AWS Cost Explorer','Azure Policy / AWS Config','CloudHealth / Spot.io (optional FinOps tooling)','Terraform for tag policy enforcement']},
+      {phase:2,name:'Architecture Right-Sizing & Optimisation',duration:'6–10 weeks',
+        steps:['Run Azure Advisor / AWS Compute Optimizer across all subscriptions — implement all high-confidence right-sizing recommendations.','Implement auto-scaling policies for all stateless workloads — configure scale-in/scale-out based on CPU and memory metrics.','Migrate self-managed database VMs to managed PaaS services — Azure SQL Managed Instance, Azure Database for PostgreSQL, or RDS.','Implement storage lifecycle policies — configure automatic tiering to cool/archive storage for data older than 30/90 days.','Evaluate and migrate eligible workloads to containerized deployment on AKS/EKS to improve density and reduce per-workload cost.','Audit and right-size networking resources — ExpressRoute circuits, Application Gateways, and NAT Gateways.'],
+        tools:['Azure Advisor / AWS Compute Optimizer','Azure Monitor / CloudWatch','Terraform / Bicep for IaC automation','Azure Kubernetes Service / Amazon EKS','Azure Database Migration Service']},
+      {phase:3,name:'Security & Governance Hardening',duration:'4–6 weeks',
+        steps:['Deploy Microsoft Defender for Cloud / AWS Security Hub and action all Critical and High findings within 30 days.','Implement Azure AD Privileged Identity Management (PIM) for all privileged roles — enforce JIT access.','Centralise secrets management using Azure Key Vault / AWS Secrets Manager — rotate all existing secrets immediately.','Enforce Azure Policy / AWS SCPs guardrails: no public-facing storage, encryption-at-rest mandatory, and approved regions only.','Implement Defender for Cloud / AWS Security Hub regulatory compliance dashboard for NDPR/ISO 27001 controls.','Conduct quarterly access reviews using Azure AD Access Reviews / AWS IAM Access Analyzer.'],
+        tools:['Microsoft Defender for Cloud','Azure Sentinel (SIEM)','Azure AD PIM / AWS IAM','Azure Key Vault / AWS Secrets Manager','Azure Policy / AWS SCPs']},
+      {phase:4,name:'Operations Automation & Observability',duration:'6–8 weeks',
+        steps:['Achieve 85%+ IaC coverage — migrate manually provisioned resources to Terraform state management.','Deploy full-stack observability: Azure Monitor + Application Insights + Log Analytics or Datadog / Grafana stack.','Define SLOs for all Tier 1 services — configure error budget alerts and SLA breach notifications.','Implement CI/CD pipelines via Azure DevOps or GitHub Actions for all production workload deployments.','Establish automated runbooks for routine operations: VM start/stop scheduling, backup verification, certificate rotation.','Conduct a Game Day / DR resiliency test and document Recovery Time Objective compliance.'],
+        tools:['Azure Monitor / Application Insights / Log Analytics','Terraform with remote state (Azure Storage / S3)','Azure DevOps / GitHub Actions','Grafana + Prometheus (optional)','Azure Automation / AWS Systems Manager']}
+    ],
+    estimatedSavings:{p25:Math.round(cri<40?0.35:cri<60?0.25:0.15),p75:Math.round(cri<40?0.50:cri<60?0.40:0.25),note:'Estimated cloud spend reduction range based on assessment findings. Actual savings subject to detailed analysis.'}
+  };
+}
+
+async function submitAssessment() {
+  const note=document.getElementById('submitNote');
+  note.textContent='Submitting…';
+  const payload={...(window._assessmentResult||{}),answers,adminRecommendation:window._adminRec,submittedAt:new Date().toISOString()};
+  try {
+    const fnUrl='https://ae-assessment-fn.azurewebsites.net/api/submit-assessment';
+    if(fnUrl){const res=await fetch(fnUrl,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});if(res.ok){note.textContent='✓ Assessment submitted. ActivEdge will be in touch within 1 business day.';return;}}
+  } catch(e){}
+  const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});
+  const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=`ae-cloud-opt-${clientCompany.replace(/\s+/g,'-')}-${Date.now()}.json`;a.click();
+  note.textContent='✓ Assessment downloaded. Email to info@activedgetechnologies.com';
+}
+
+buildSections();
+</script>
+</body>
+</html>

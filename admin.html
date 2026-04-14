@@ -1,0 +1,802 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Admin Portal — ActivEdge Cloud Assessment</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Space+Grotesk:wght@300;400;500;600&display=swap');
+:root{--navy:#0a1628;--navy-mid:#112240;--navy-light:#1a3460;--teal:#00c6a7;--gold:#f5a623;--white:#f0f4ff;--muted:#7b90b8;--card-bg:rgba(17,34,64,0.9);--border:rgba(0,198,167,0.2);--danger:#ff5555;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Space Grotesk',sans-serif;background:var(--navy);color:var(--white);min-height:100vh;}
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(0,198,167,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(0,198,167,0.03) 1px,transparent 1px);background-size:60px 60px;pointer-events:none;z-index:0;}
+
+/* SIDEBAR */
+.layout{display:flex;min-height:100vh;position:relative;z-index:1;}
+.sidebar{width:260px;background:rgba(8,18,38,0.98);border-right:1px solid var(--border);padding:0;flex-shrink:0;display:flex;flex-direction:column;}
+.sidebar-logo{padding:28px 24px;border-bottom:1px solid var(--border);}
+.logo-icon{width:44px;height:44px;background:linear-gradient(135deg,var(--teal),var(--navy-light));border-radius:12px;display:flex;align-items:center;justify-content:center;font-family:'Sora',sans-serif;font-weight:800;font-size:16px;color:#fff;margin-bottom:12px;box-shadow:0 0 16px rgba(0,198,167,0.3);}
+.logo-name{font-family:'Sora',sans-serif;font-weight:700;font-size:15px;color:#fff;}
+.logo-sub{font-size:10px;color:var(--teal);letter-spacing:1.5px;text-transform:uppercase;}
+.admin-tag{display:inline-block;padding:3px 10px;background:rgba(255,85,85,0.15);border:1px solid rgba(255,85,85,0.3);border-radius:20px;font-size:10px;color:#ff9999;letter-spacing:1px;text-transform:uppercase;margin-top:8px;}
+
+.nav{padding:20px 0;flex:1;}
+.nav-item{padding:12px 24px;cursor:pointer;display:flex;align-items:center;gap:12px;font-size:14px;color:var(--muted);border-left:3px solid transparent;transition:all 0.2s;}
+.nav-item:hover{background:rgba(0,198,167,0.06);color:#c8d8f0;}
+.nav-item.active{background:rgba(0,198,167,0.1);border-left-color:var(--teal);color:#fff;}
+.nav-item .nav-icon{font-size:18px;width:24px;text-align:center;}
+.nav-section{padding:16px 24px 8px;font-size:10px;letter-spacing:2px;color:#2a4060;text-transform:uppercase;}
+
+.sidebar-footer{padding:20px 24px;border-top:1px solid var(--border);font-size:12px;color:#2a4060;}
+
+/* MAIN */
+.main{flex:1;overflow-y:auto;}
+.page-header{padding:32px 40px;border-bottom:1px solid rgba(255,255,255,0.06);}
+.page-title{font-family:'Sora',sans-serif;font-size:26px;font-weight:700;color:#fff;}
+.page-sub{font-size:14px;color:var(--muted);margin-top:4px;}
+.content{padding:32px 40px;}
+
+/* CARDS */
+.stats-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:20px;margin-bottom:32px;}
+.stat-card{background:var(--card-bg);border:1px solid rgba(255,255,255,0.06);border-radius:14px;padding:20px 24px;}
+.stat-label{font-size:12px;color:var(--muted);letter-spacing:0.5px;text-transform:uppercase;margin-bottom:8px;}
+.stat-val{font-family:'Sora',sans-serif;font-size:32px;font-weight:700;color:#fff;}
+.stat-sub{font-size:12px;color:var(--muted);margin-top:4px;}
+
+/* PAGE SECTIONS */
+.section-card{background:var(--card-bg);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:28px;margin-bottom:24px;}
+.section-card h3{font-family:'Sora',sans-serif;font-size:17px;font-weight:600;margin-bottom:20px;color:#fff;display:flex;align-items:center;gap:10px;}
+
+/* FORM */
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;}
+.form-group{margin-bottom:16px;}
+.form-group label{display:block;font-size:12px;font-weight:600;color:#aabbd8;letter-spacing:0.5px;margin-bottom:8px;}
+.form-group input,.form-group select,.form-group textarea{width:100%;padding:12px 16px;background:rgba(10,22,40,0.8);border:1px solid rgba(0,198,167,0.2);border-radius:10px;color:#fff;font-size:14px;font-family:'Space Grotesk',sans-serif;outline:none;transition:border-color 0.2s;}
+.form-group input::placeholder,.form-group textarea::placeholder{color:#3a5070;}
+.form-group input:focus,.form-group select:focus{border-color:var(--teal);box-shadow:0 0 0 3px rgba(0,198,167,0.1);}
+.form-group select option{background:var(--navy-mid);}
+.form-group textarea{resize:vertical;min-height:80px;}
+
+.btn{padding:12px 24px;border-radius:10px;font-size:14px;font-weight:600;font-family:'Sora',sans-serif;cursor:pointer;transition:all 0.2s;display:inline-flex;align-items:center;gap:8px;border:none;}
+.btn-primary{background:linear-gradient(135deg,var(--teal),#00a88d);color:var(--navy);}
+.btn-primary:hover{transform:translateY(-1px);box-shadow:0 8px 20px rgba(0,198,167,0.3);}
+.btn-secondary{background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);color:var(--muted);}
+.btn-secondary:hover{background:rgba(255,255,255,0.1);color:#fff;}
+.btn-danger{background:rgba(255,85,85,0.15);border:1px solid rgba(255,85,85,0.3);color:#ff9999;}
+.btn-danger:hover{background:rgba(255,85,85,0.25);}
+.btn-sm{padding:7px 14px;font-size:12px;}
+.btn-gold{background:linear-gradient(135deg,var(--gold),#e8940a);color:var(--navy);}
+
+/* GENERATED LINK BOX */
+.link-box{background:rgba(0,198,167,0.06);border:1px solid rgba(0,198,167,0.25);border-radius:12px;padding:20px;margin-top:20px;display:none;}
+.link-box.show{display:block;}
+.link-label{font-size:11px;letter-spacing:1px;color:var(--teal);text-transform:uppercase;margin-bottom:8px;}
+.link-value{font-size:13px;color:#c8d8f0;word-break:break-all;padding:12px;background:rgba(10,22,40,0.6);border-radius:8px;margin-bottom:12px;font-family:monospace;}
+.link-meta{font-size:12px;color:var(--muted);}
+
+/* TABLE */
+.table-wrap{overflow-x:auto;}
+table{width:100%;border-collapse:collapse;}
+th{padding:12px 16px;text-align:left;font-size:11px;letter-spacing:1px;color:var(--muted);text-transform:uppercase;border-bottom:1px solid rgba(255,255,255,0.06);}
+td{padding:14px 16px;font-size:13px;color:#c8d8f0;border-bottom:1px solid rgba(255,255,255,0.04);}
+tr:hover td{background:rgba(0,198,167,0.03);}
+.badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;}
+.badge-success{background:rgba(0,198,167,0.15);color:var(--teal);}
+.badge-warn{background:rgba(245,166,35,0.15);color:var(--gold);}
+.badge-danger{background:rgba(255,85,85,0.15);color:#ff9999;}
+.badge-info{background:rgba(100,180,255,0.15);color:#aad0ff;}
+
+/* SUBMISSION MODAL */
+.modal-overlay{position:fixed;inset:0;z-index:1000;background:rgba(5,10,25,0.92);backdrop-filter:blur(12px);display:none;align-items:flex-start;justify-content:center;padding:40px 24px;overflow-y:auto;}
+.modal-overlay.show{display:flex;}
+.modal{background:var(--navy-mid);border:1px solid var(--border);border-radius:20px;padding:40px;max-width:900px;width:100%;position:relative;}
+.modal-close{position:absolute;top:16px;right:16px;width:32px;height:32px;border-radius:8px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:var(--muted);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+.modal-close:hover{background:rgba(255,255,255,0.1);color:#fff;}
+
+/* ADMIN REC PHASES */
+.phase-card{background:rgba(10,22,40,0.6);border:1px solid rgba(255,255,255,0.07);border-radius:12px;padding:20px;margin-bottom:16px;}
+.phase-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
+.phase-title{font-family:'Sora',sans-serif;font-size:15px;font-weight:600;color:#fff;}
+.phase-meta{display:flex;gap:12px;align-items:center;}
+.phase-tag{padding:3px 10px;border-radius:20px;font-size:11px;background:rgba(0,198,167,0.1);color:var(--teal);}
+.phase-steps{list-style:none;}
+.phase-steps li{padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.04);font-size:13px;color:var(--muted);padding-left:20px;position:relative;line-height:1.5;}
+.phase-steps li::before{content:counter(step);counter-increment:step;position:absolute;left:0;color:var(--teal);font-weight:700;font-size:11px;}
+.phase-steps{counter-reset:step;}
+.tools-list{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;}
+.tool-tag{padding:4px 12px;background:rgba(100,180,255,0.1);border:1px solid rgba(100,180,255,0.2);border-radius:20px;font-size:11px;color:#aad0ff;}
+
+/* TABS */
+.tabs{display:flex;gap:4px;padding:4px;background:rgba(0,0,0,0.2);border-radius:10px;margin-bottom:24px;width:fit-content;}
+.tab{padding:8px 20px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;color:var(--muted);transition:all 0.2s;}
+.tab.active{background:var(--card-bg);color:#fff;}
+
+/* EMPTY STATE */
+.empty{text-align:center;padding:60px 20px;color:var(--muted);}
+.empty-icon{font-size:48px;margin-bottom:16px;}
+.empty h4{font-family:'Sora',sans-serif;font-size:18px;color:#c8d8f0;margin-bottom:8px;}
+
+@media(max-width:900px){
+  .sidebar{display:none;}
+  .content{padding:20px;}
+  .page-header{padding:20px;}
+  .form-row{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+
+<!-- ── ADMIN LOGIN GATE ── -->
+<div id="adminLoginGate" style="
+  position:fixed;inset:0;z-index:9999;
+  background:radial-gradient(ellipse at 60% 30%, rgba(0,120,212,0.12) 0%, #0a1628 60%);
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Space Grotesk',sans-serif;
+">
+  <div style="
+    background:rgba(17,34,64,0.95);
+    border:1px solid rgba(0,198,167,0.25);
+    border-radius:24px;padding:48px 44px;
+    max-width:440px;width:90%;
+    box-shadow:0 32px 80px rgba(0,0,0,0.6);
+    text-align:center;
+  ">
+    <div style="width:60px;height:60px;background:linear-gradient(135deg,var(--teal),var(--navy-light));border-radius:16px;display:flex;align-items:center;justify-content:center;font-family:'Sora',sans-serif;font-weight:800;font-size:22px;color:#fff;margin:0 auto 20px;box-shadow:0 0 24px rgba(0,198,167,0.3);">AE</div>
+    <div style="font-family:'Sora',sans-serif;font-weight:700;font-size:22px;color:#fff;margin-bottom:6px;">Admin Portal</div>
+    <div style="font-size:12px;color:var(--teal);letter-spacing:2px;text-transform:uppercase;margin-bottom:32px;">ActivEdge Technologies — Restricted Access</div>
+    <div style="text-align:left;margin-bottom:16px;">
+      <label style="display:block;font-size:12px;font-weight:600;color:#aabbd8;letter-spacing:0.5px;margin-bottom:8px;">Admin Password</label>
+      <input type="password" id="adminPasswordInput" placeholder="Enter admin password"
+        style="width:100%;padding:14px 16px;background:rgba(10,22,40,0.9);border:1px solid rgba(0,198,167,0.25);border-radius:10px;color:#fff;font-size:15px;font-family:'Space Grotesk',sans-serif;outline:none;"
+        onkeydown="if(event.key==='Enter')checkAdminPassword()"
+      />
+    </div>
+    <div id="loginError" style="color:#ff9999;font-size:13px;margin-bottom:16px;display:none;">Incorrect password. Please try again.</div>
+    <button onclick="checkAdminPassword()" style="
+      width:100%;padding:14px;
+      background:linear-gradient(135deg,var(--teal),#00a88d);
+      border:none;border-radius:12px;
+      color:var(--navy);font-family:'Sora',sans-serif;font-weight:700;font-size:16px;
+      cursor:pointer;letter-spacing:0.3px;
+      box-shadow:0 8px 24px rgba(0,198,167,0.3);
+    ">Access Admin Portal →</button>
+    <div style="font-size:12px;color:#2a4060;margin-top:20px;">🔒 Authorised ActivEdge personnel only</div>
+  </div>
+</div>
+
+<div id="adminApp" style="display:none;">
+<div class="layout">
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-icon">AE</div>
+    <div class="logo-name">ActivEdge Technologies</div>
+    <div class="logo-sub">Cloud Engineering</div>
+    <div class="admin-tag">Admin Portal</div>
+  </div>
+  <nav class="nav">
+    <div class="nav-section">Dashboard</div>
+    <div class="nav-item active" onclick="showPage('dashboard')"><span class="nav-icon">📊</span> Overview</div>
+    <div class="nav-section">Assessments</div>
+    <div class="nav-item" onclick="showPage('generate')"><span class="nav-icon">🔗</span> Generate Link</div>
+    <div class="nav-item" onclick="showPage('links')"><span class="nav-icon">🗂️</span> Manage Links</div>
+    <div class="nav-item" onclick="showPage('submissions')"><span class="nav-icon">📋</span> Submissions</div>
+    <div class="nav-section">Reports</div>
+    <div class="nav-item" onclick="showPage('export')"><span class="nav-icon">📥</span> Export Data</div>
+  </nav>
+  <div class="sidebar-footer">
+    ActivEdge Technologies<br/>
+    admin@activedgetechnologies.com
+  </div>
+</aside>
+
+<!-- MAIN -->
+<main class="main" id="mainContent">
+
+  <!-- DASHBOARD -->
+  <div id="page-dashboard">
+    <div class="page-header">
+      <div class="page-title">Assessment Dashboard</div>
+      <div class="page-sub">Manage cloud readiness assessments for your clients</div>
+    </div>
+    <div class="content">
+      <div class="stats-row" id="statsRow">
+        <div class="stat-card"><div class="stat-label">Total Links Generated</div><div class="stat-val" id="statLinks">0</div><div class="stat-sub">All time</div></div>
+        <div class="stat-card"><div class="stat-label">Pending (Not Submitted)</div><div class="stat-val" id="statPending">0</div><div class="stat-sub">Awaiting completion</div></div>
+        <div class="stat-card"><div class="stat-label">Completed Submissions</div><div class="stat-val" id="statDone">0</div><div class="stat-sub">Results available</div></div>
+        <div class="stat-card"><div class="stat-label">Expired Links</div><div class="stat-val" id="statExpired">0</div><div class="stat-sub">Auto-expired</div></div>
+      </div>
+
+      <div class="section-card">
+        <h3>📬 Recent Activity</h3>
+        <div id="recentActivity">
+          <div class="empty"><div class="empty-icon">📭</div><h4>No activity yet</h4><p>Generate your first assessment link to get started.</p></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- GENERATE LINK -->
+  <div id="page-generate" style="display:none">
+    <div class="page-header">
+      <div class="page-title">Generate Assessment Link</div>
+      <div class="page-sub">Create a timed, single-use assessment link for your client</div>
+    </div>
+    <div class="content">
+      <div class="section-card">
+        <h3>🔗 New Assessment Link</h3>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Client / Organisation Name</label>
+            <input type="text" id="gen_company" placeholder="e.g. Zenith Bank Plc"/>
+          </div>
+          <div class="form-group">
+            <label>Client Email (for records)</label>
+            <input type="email" id="gen_email" placeholder="client@company.com"/>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Assessment Type</label>
+            <select id="gen_type">
+              <option value="onprem">On-Premise to Cloud Migration Readiness</option>
+              <option value="cloudopt">Cloud Cost & Optimisation Assessment</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Link Expiry Duration</label>
+            <select id="gen_expiry">
+              <option value="24">24 hours</option>
+              <option value="48" selected>48 hours</option>
+              <option value="72">72 hours (3 days)</option>
+              <option value="168">7 days</option>
+              <option value="336">14 days</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Notes (internal — not visible to client)</label>
+          <textarea id="gen_notes" placeholder="e.g. Sent via email campaign, prospect from Q2 pipeline…"></textarea>
+        </div>
+        <button class="btn btn-primary" onclick="generateLink()">🔗 Generate Assessment Link</button>
+
+        <div class="link-box" id="linkBox">
+          <div class="link-label">Assessment Link — Share with Client</div>
+          <div class="link-value" id="generatedLink">—</div>
+          <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px;">
+            <button class="btn btn-primary btn-sm" onclick="copyLink()">📋 Copy Link</button>
+            <button class="btn btn-secondary btn-sm" onclick="openEmailDraft()">📧 Draft Email</button>
+          </div>
+          <div class="link-meta" id="linkMeta">—</div>
+        </div>
+      </div>
+
+      <div class="section-card">
+        <h3>ℹ️ Link Behaviour</h3>
+        <ul style="list-style:none;display:grid;gap:10px;">
+          <li style="color:var(--muted);font-size:14px;padding:10px;background:rgba(0,198,167,0.05);border-radius:8px;border-left:3px solid var(--teal);">🔒 <strong style="color:#fff">Single-use only</strong> — Once the client submits the assessment, the link becomes permanently inactive.</li>
+          <li style="color:var(--muted);font-size:14px;padding:10px;background:rgba(0,198,167,0.05);border-radius:8px;border-left:3px solid var(--teal);">⏰ <strong style="color:#fff">Auto-expires</strong> — Links expire at the configured time, even if not used.</li>
+          <li style="color:var(--muted);font-size:14px;padding:10px;background:rgba(0,198,167,0.05);border-radius:8px;border-left:3px solid var(--teal);">📋 <strong style="color:#fff">Client intake</strong> — On first click, the client is shown the landing page asking for Company Name, Phone, and Email before seeing the assessment.</li>
+          <li style="color:var(--muted);font-size:14px;padding:10px;background:rgba(0,198,167,0.05);border-radius:8px;border-left:3px solid var(--teal);">🔐 <strong style="color:#fff">Admin-only guide</strong> — The detailed step-by-step implementation guide is stored in Azure Blob Storage and only accessible from this admin portal.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- MANAGE LINKS -->
+  <div id="page-links" style="display:none">
+    <div class="page-header">
+      <div class="page-title">Manage Assessment Links</div>
+      <div class="page-sub">View all generated links and their status</div>
+    </div>
+    <div class="content">
+      <div class="section-card">
+        <h3>🗂️ All Generated Links</h3>
+        <div id="linksTable">
+          <div class="empty"><div class="empty-icon">🔗</div><h4>No links yet</h4><p>Generate your first assessment link from the Generate Link page.</p></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SUBMISSIONS -->
+  <div id="page-submissions" style="display:none">
+    <div class="page-header">
+      <div class="page-title">Assessment Submissions</div>
+      <div class="page-sub">View client submissions and detailed admin recommendations</div>
+    </div>
+    <div class="content">
+      <div class="tabs">
+        <div class="tab active" onclick="filterSubs('all',this)">All</div>
+        <div class="tab" onclick="filterSubs('onprem',this)">Migration</div>
+        <div class="tab" onclick="filterSubs('cloudopt',this)">Optimisation</div>
+      </div>
+      <div class="section-card">
+        <h3>📋 Submissions</h3>
+        <div id="submissionsTable">
+          <div class="empty"><div class="empty-icon">📭</div><h4>No submissions yet</h4><p>Completed assessments from clients will appear here.</p></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- EXPORT -->
+  <div id="page-export" style="display:none">
+    <div class="page-header">
+      <div class="page-title">Export Data</div>
+      <div class="page-sub">Download assessment data and reports</div>
+    </div>
+    <div class="content">
+      <div class="section-card">
+        <h3>📥 Export Options</h3>
+        <div style="display:grid;gap:16px;">
+          <div style="padding:20px;background:rgba(0,0,0,0.2);border-radius:12px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;">
+            <div><div style="font-weight:600;color:#fff;margin-bottom:4px;">All Submissions (JSON)</div><div style="font-size:13px;color:var(--muted);">Complete assessment data including admin recommendations</div></div>
+            <button class="btn btn-primary btn-sm" onclick="exportAll('json')">⬇ Export JSON</button>
+          </div>
+          <div style="padding:20px;background:rgba(0,0,0,0.2);border-radius:12px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;">
+            <div><div style="font-weight:600;color:#fff;margin-bottom:4px;">Summary Report (CSV)</div><div style="font-size:13px;color:var(--muted);">Client name, CRI scores, maturity, and domain scores</div></div>
+            <button class="btn btn-primary btn-sm" onclick="exportAll('csv')">⬇ Export CSV</button>
+          </div>
+          <div style="padding:20px;background:rgba(0,0,0,0.2);border-radius:12px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;">
+            <div><div style="font-weight:600;color:#fff;margin-bottom:4px;">Clear All Local Data</div><div style="font-size:13px;color:var(--muted);">Remove all locally stored links and submissions. Use only after backing up.</div></div>
+            <button class="btn btn-danger btn-sm" onclick="clearAll()">🗑 Clear Storage</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</main>
+</div><!-- /layout -->
+</div><!-- /adminApp wrapper - DO NOT REMOVE -->
+
+<!-- SUBMISSION DETAIL MODAL -->
+<div class="modal-overlay" id="subModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <div id="subModalContent"></div>
+  </div>
+</div>
+
+<script>
+// ═════════════════════════════════════════════
+//  CONFIG — Update with your Azure Function URL after deployment
+// ═════════════════════════════════════════════
+const FUNCTION_BASE = window.FUNCTION_BASE || 'https://ae-assessment-fn.azurewebsites.net';
+const PORTAL_BASE = window.location.origin + window.location.pathname.replace('admin.html','');
+
+// ═════════════════════════════════════════════
+//  LOCAL STORAGE (fallback when no Azure Function)
+// ═════════════════════════════════════════════
+function getLinks() { try { return JSON.parse(localStorage.getItem('ae_links') || '[]'); } catch(e) { return []; } }
+function saveLinks(links) { localStorage.setItem('ae_links', JSON.stringify(links)); }
+function getSubmissions() { try { return JSON.parse(localStorage.getItem('ae_submissions') || '[]'); } catch(e) { return []; } }
+function saveSubmissions(subs) { localStorage.setItem('ae_submissions', JSON.stringify(subs)); }
+function getDeletedSubmissionFilenames() { try { return JSON.parse(localStorage.getItem('ae_deleted_submissions') || '[]'); } catch(e) { return []; } }
+function saveDeletedSubmissionFilenames(files) { localStorage.setItem('ae_deleted_submissions', JSON.stringify(files)); }
+function getSubmissionKey(submission) {
+  if (!submission) return '';
+  if (submission.__filename) return submission.__filename;
+  if (submission.filename) return submission.filename;
+  return [submission.clientCompany||'', submission.clientEmail||'', submission.clientPhone||'', submission.submittedAt || submission.timestamp || '', submission.type || ''].join('|');
+}
+
+// ═════════════════════════════════════════════
+//  NAVIGATION
+// ═════════════════════════════════════════════
+function showPage(id) {
+  document.querySelectorAll('#mainContent > div[id^="page-"]').forEach(p => p.style.display = 'none');
+  document.getElementById('page-' + id).style.display = 'block';
+  document.querySelectorAll('.nav-item').forEach(ni => ni.classList.remove('active'));
+  event?.currentTarget?.classList.add('active');
+  if (id === 'dashboard') updateDashboard();
+  if (id === 'links') renderLinksTable();
+  if (id === 'submissions') renderSubmissions('all');
+}
+
+// ═════════════════════════════════════════════
+//  GENERATE LINK
+// ═════════════════════════════════════════════
+function generateLink() {
+  const company = document.getElementById('gen_company').value.trim();
+  const email = document.getElementById('gen_email').value.trim();
+  const type = document.getElementById('gen_type').value;
+  const expiryHrs = parseInt(document.getElementById('gen_expiry').value);
+  const notes = document.getElementById('gen_notes').value.trim();
+  if (!company) { alert('Please enter a client/organisation name.'); return; }
+
+  const token = 'ae_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 8);
+  const expiresAt = new Date(Date.now() + expiryHrs * 3600000).toISOString();
+  const link = { token, company, email, type, notes, expiresAt, status: 'pending', createdAt: new Date().toISOString() };
+
+  const links = getLinks();
+  links.unshift(link);
+  saveLinks(links);
+
+  // Also attempt to register with Azure Function
+  if (FUNCTION_BASE) {
+    fetch(`${FUNCTION_BASE}/api/create-token`, { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(link) }).catch(()=>{});
+  }
+
+  const assessmentUrl = `${PORTAL_BASE}index.html?token=${token}`;
+  document.getElementById('generatedLink').textContent = assessmentUrl;
+  document.getElementById('linkMeta').innerHTML = `
+    <strong style="color:#fff;">Client:</strong> ${company} &nbsp;·&nbsp;
+    <strong style="color:#fff;">Type:</strong> ${type === 'onprem' ? 'Migration' : 'Optimisation'} &nbsp;·&nbsp;
+    <strong style="color:#fff;">Expires:</strong> ${new Date(expiresAt).toLocaleString()} &nbsp;·&nbsp;
+    <strong style="color:#fff;">Status:</strong> <span style="color:var(--gold);">Pending</span>`;
+  document.getElementById('linkBox').classList.add('show');
+  window._currentLink = assessmentUrl;
+  updateDashboard();
+}
+
+function copyLink() {
+  const link = document.getElementById('generatedLink').textContent;
+  navigator.clipboard.writeText(link).then(() => {
+    const btn = event.currentTarget;
+    btn.textContent = '✓ Copied!';
+    setTimeout(() => btn.textContent = '📋 Copy Link', 2000);
+  });
+}
+
+function openEmailDraft() {
+  const link = document.getElementById('generatedLink').textContent;
+  const company = document.getElementById('gen_company').value.trim();
+  const type = document.getElementById('gen_type').value === 'onprem' ? 'Cloud Migration Readiness' : 'Cloud Optimisation';
+  const subject = encodeURIComponent(`Your ActivEdge ${type} Assessment`);
+  const body = encodeURIComponent(`Dear ${company} Team,\n\nThank you for your interest in ActivEdge Technologies' Cloud Engineering services.\n\nPlease use the link below to complete your ${type} Assessment. The assessment takes approximately 20–30 minutes and will generate a personalised Cloud Readiness report with strategic insights from our team.\n\nAssessment Link:\n${link}\n\nThis link is valid for a limited time and can only be submitted once. Please ensure you complete and submit the assessment before it expires.\n\nIf you have any questions, please do not hesitate to contact us:\n📧 info@activedgetechnologies.com\n📞 +234 906 844 4440\n\nKind regards,\nCloud Engineering Team\nActivEdge Technologies\nNo. 4b, Utomi Airie Avenue, Lekki Phase 1, Lagos\nactivedgetechnologies.com`);
+  window.open(`mailto:?subject=${subject}&body=${body}`);
+}
+
+// ═════════════════════════════════════════════
+//  DASHBOARD
+// ═════════════════════════════════════════════
+function updateDashboard() {
+  const links = getLinks();
+  const subs = getSubmissions();
+  const now = new Date();
+  const pending = links.filter(l => l.status === 'pending' && new Date(l.expiresAt) > now).length;
+  const expired = links.filter(l => new Date(l.expiresAt) <= now && l.status === 'pending').length;
+  const done = subs.length;
+  document.getElementById('statLinks').textContent = links.length;
+  document.getElementById('statPending').textContent = pending;
+  document.getElementById('statDone').textContent = done;
+  document.getElementById('statExpired').textContent = expired;
+
+  const recentEl = document.getElementById('recentActivity');
+  const recent = [...links.slice(0,3), ...subs.slice(0,3)].sort((a,b) => new Date(b.createdAt||b.submittedAt) - new Date(a.createdAt||a.submittedAt)).slice(0,5);
+  if (recent.length === 0) {
+    recentEl.innerHTML = '<div class="empty"><div class="empty-icon">📭</div><h4>No activity yet</h4></div>';
+  } else {
+    recentEl.innerHTML = '<div class="table-wrap"><table><thead><tr><th>Client</th><th>Type</th><th>Action</th><th>Time</th><th>Status</th></tr></thead><tbody>' +
+      recent.map(item => {
+        const isLink = !!item.token;
+        const statusBadge = isLink ? (new Date(item.expiresAt)>new Date()?'<span class="badge badge-warn">Pending</span>':'<span class="badge badge-danger">Expired</span>') : `<span class="badge badge-success">${item.cri}% CRI</span>`;
+        const ts = isLink ? item.createdAt : item.submittedAt;
+        return `<tr><td><strong>${item.company||item.clientCompany}</strong></td><td><span class="badge badge-info">${(item.type||item.assessmentType)==='onprem'?'Migration':'Optimisation'}</span></td><td>${isLink?'Link Generated':'Assessment Submitted'}</td><td>${new Date(ts).toLocaleDateString()}</td><td>${statusBadge}</td></tr>`;
+      }).join('') + '</tbody></table></div>';
+  }
+}
+
+// ═════════════════════════════════════════════
+//  LINKS TABLE
+// ═════════════════════════════════════════════
+function renderLinksTable() {
+  const links = getLinks();
+  const el = document.getElementById('linksTable');
+  if (links.length === 0) { el.innerHTML='<div class="empty"><div class="empty-icon">🔗</div><h4>No links yet</h4></div>'; return; }
+  el.innerHTML = '<div class="table-wrap"><table><thead><tr><th>Client</th><th>Type</th><th>Email</th><th>Created</th><th>Expires</th><th>Status</th><th>Actions</th></tr></thead><tbody>' +
+    links.map(l => {
+      const isExpired = new Date(l.expiresAt) <= new Date() && l.status === 'pending';
+      const statusBadge = l.status === 'submitted' ? '<span class="badge badge-success">Submitted</span>' : isExpired ? '<span class="badge badge-danger">Expired</span>' : '<span class="badge badge-warn">Pending</span>';
+      const url = `${PORTAL_BASE}index.html?token=${l.token}`;
+      return `<tr><td><strong>${l.company}</strong><br/><span style="font-size:11px;color:var(--muted);">${l.notes?l.notes.slice(0,40)+'…':''}</span></td><td><span class="badge badge-info">${l.type==='onprem'?'Migration':'Optimisation'}</span></td><td style="font-size:12px;">${l.email||'—'}</td><td style="font-size:12px;">${new Date(l.createdAt).toLocaleDateString()}</td><td style="font-size:12px;">${new Date(l.expiresAt).toLocaleDateString()}</td><td>${statusBadge}</td><td><button class="btn btn-secondary btn-sm" onclick="copyTokenLink('${url}')">📋 Copy</button> <button class="btn btn-danger btn-sm" onclick="deleteTokenLink('${l.token}')">🗑 Delete</button></td></tr>`;
+    }).join('') + '</tbody></table></div>';
+}
+
+function copyTokenLink(url) {
+  navigator.clipboard.writeText(url).then(() => { event.currentTarget.textContent = '✓ Copied!'; setTimeout(() => event.currentTarget.textContent = '📋 Copy', 2000); });
+}
+
+async function deleteTokenLink(token) {
+  if (!confirm('Delete this assessment link? This cannot be undone.')) return;
+  const links = getLinks();
+  const remaining = links.filter(l => l.token !== token);
+  saveLinks(remaining);
+  renderLinksTable();
+  updateDashboard();
+  try {
+    const res = await fetch(FUNCTION_BASE + '/api/delete-token', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-admin-key': 'ActivEdge@Admin2025'
+      },
+      body: JSON.stringify({ token })
+    });
+    if (!res.ok) {
+      const error = await res.text();
+      console.warn('Token delete failed:', error);
+    }
+  } catch (e) {
+    console.warn('Token delete request failed:', e);
+  }
+}
+
+async function deleteSubmission(filename, idx) {
+  if (!confirm('Delete this submission? This cannot be undone.')) return;
+
+  let submissions = getSubmissions();
+  let deleteKey = '';
+
+  if (filename) {
+    deleteKey = filename;
+  } else {
+    const filtered = submissions.filter(s => subFilter === 'all' || s.type === subFilter);
+    const target = filtered[idx];
+    if (target) deleteKey = getSubmissionKey(target);
+  }
+
+  if (deleteKey) {
+    submissions = submissions.filter(s => getSubmissionKey(s) !== deleteKey);
+    const deletedFiles = getDeletedSubmissionFilenames();
+    if (!deletedFiles.includes(deleteKey)) {
+      deletedFiles.push(deleteKey);
+      saveDeletedSubmissionFilenames(deletedFiles);
+    }
+  } else {
+    const filtered = submissions.filter(s => subFilter === 'all' || s.type === subFilter);
+    if (filtered[idx]) {
+      const target = filtered[idx];
+      submissions = submissions.filter(s => s !== target);
+    }
+  }
+
+  saveSubmissions(submissions);
+  renderSubmissions(subFilter);
+  updateDashboard();
+
+  if (filename) {
+    try {
+      const res = await fetch(FUNCTION_BASE + '/api/delete-submission', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-admin-key': 'ActivEdge@Admin2025'
+        },
+        body: JSON.stringify({ filename })
+      });
+      if (!res.ok) {
+        const error = await res.text();
+        console.warn('Submission delete failed:', error);
+      }
+    } catch (e) {
+      console.warn('Submission delete request failed:', e);
+    }
+  }
+}
+
+// ═════════════════════════════════════════════
+//  SUBMISSIONS
+// ═════════════════════════════════════════════
+let subFilter = 'all';
+function filterSubs(filter, el) {
+  subFilter = filter;
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  renderSubmissions(filter);
+}
+
+async function renderSubmissions(filter) {
+  const el = document.getElementById('submissionsTable');
+  el.innerHTML = '<div class="empty"><div class="empty-icon">⏳</div><h4>Loading submissions…</h4></div>';
+  let subs = [];
+  const deletedFiles = getDeletedSubmissionFilenames();
+  try {
+    const res = await fetch(FUNCTION_BASE + '/api/list-submissions', {
+      headers: { 'x-admin-key': 'ActivEdge@Admin2025' }
+    });
+    if (res.ok) {
+      const data = await res.json();
+      subs = (data.submissions || []).filter(s => !deletedFiles.includes(getSubmissionKey(s)));
+      saveSubmissions(subs);
+    } else {
+      subs = getSubmissions();
+    }
+  } catch(e) {
+    subs = getSubmissions();
+  }
+  if (filter !== 'all') subs = subs.filter(s => s.type === filter);
+  if (subs.length === 0) { el.innerHTML='<div class="empty"><div class="empty-icon">📭</div><h4>No submissions yet</h4></div>'; return; }
+  el.innerHTML = '<div class="table-wrap"><table><thead><tr><th>Client</th><th>Email</th><th>Phone</th><th>Type</th><th>CRI Score</th><th>Maturity</th><th>Submitted</th><th>Actions</th></tr></thead><tbody>' +
+    subs.map((s, i) => {
+      const color = s.cri >= 71 ? 'var(--teal)' : s.cri >= 51 ? '#aad0ff' : s.cri >= 26 ? '#ffd080' : '#ff9999';
+      return `<tr><td><strong>${s.clientCompany||'—'}</strong></td><td style="font-size:12px;">${s.clientEmail||'—'}</td><td style="font-size:12px;">${s.clientPhone||'—'}</td><td><span class="badge badge-info">${s.type==='onprem'?'Migration':'Optimisation'}</span></td><td><strong style="color:${color};font-size:16px;">${s.cri}%</strong></td><td>${s.maturity||'—'}</td><td style="font-size:12px;">${new Date(s.submittedAt||s.timestamp).toLocaleDateString()}</td><td><button class="btn btn-primary btn-sm" onclick="viewSubmission(${i})">View Report</button> <button class="btn btn-danger btn-sm" onclick="deleteSubmission('${s.__filename||''}', ${i})">🗑 Delete</button></td></tr>`;
+    }).join('') + '</tbody></table></div>';
+}
+
+function viewSubmission(idx) {
+  const subs = getSubmissions().filter(s => subFilter === 'all' || s.type === subFilter);
+  const s = subs[idx];
+  if (!s) return;
+  const adminRec = s.adminRecommendation;
+  let html = `<h2 style="font-family:'Sora',sans-serif;font-size:22px;font-weight:700;margin-bottom:4px;">${s.clientCompany}</h2>
+    <p style="color:var(--muted);font-size:13px;margin-bottom:24px;">${s.clientEmail} · ${s.clientPhone} · Submitted: ${new Date(s.submittedAt||s.timestamp).toLocaleString()}</p>
+    <div style="display:flex;gap:16px;flex-wrap:wrap;margin-bottom:28px;">
+      <div style="padding:16px 24px;background:rgba(0,198,167,0.1);border-radius:12px;text-align:center;">
+        <div style="font-size:32px;font-weight:800;font-family:'Sora',sans-serif;color:var(--teal);">${s.cri}%</div>
+        <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;">CRI Score</div>
+      </div>
+      <div style="padding:16px 24px;background:rgba(245,166,35,0.1);border-radius:12px;text-align:center;">
+        <div style="font-size:20px;font-weight:700;font-family:'Sora',sans-serif;color:var(--gold);">${s.maturity}</div>
+        <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;">Maturity Level</div>
+      </div>
+      <div style="padding:16px 24px;background:rgba(100,180,255,0.1);border-radius:12px;text-align:center;">
+        <div style="font-size:20px;font-weight:700;font-family:'Sora',sans-serif;color:#aad0ff;">${s.type === 'onprem' ? 'Migration' : 'Optimisation'}</div>
+        <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;">Assessment Type</div>
+      </div>
+    </div>`;
+
+  // Domain scores
+  if (s.domainScores) {
+    html += `<h3 style="font-family:'Sora',sans-serif;font-size:16px;font-weight:600;margin-bottom:16px;color:#fff;">Domain Scores</h3>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;margin-bottom:28px;">`;
+    Object.entries(s.domainScores).forEach(([k,v]) => {
+      const score = typeof v === 'object' ? v.score : v;
+      const label = typeof v === 'object' ? v.label : k;
+      const color = score >= 75 ? '#00c6a7' : score >= 50 ? '#64b5f6' : score >= 30 ? '#f5a623' : '#ff5555';
+      html += `<div style="background:rgba(0,0,0,0.2);border-radius:10px;padding:14px;"><div style="font-size:11px;color:var(--muted);margin-bottom:4px;">${label||k}</div><div style="font-size:22px;font-weight:700;color:${color};">${score}%</div></div>`;
+    });
+    html += `</div>`;
+  }
+
+  // Admin recommendation
+  if (adminRec && adminRec.phases) {
+    html += `<h3 style="font-family:'Sora',sans-serif;font-size:18px;font-weight:700;margin-bottom:20px;color:#fff;border-top:1px solid rgba(255,255,255,0.06);padding-top:24px;">🔧 Admin Implementation Guide</h3>`;
+    if (adminRec.timeline) {
+      html += `<div style="padding:14px 18px;background:rgba(0,198,167,0.06);border-radius:10px;margin-bottom:20px;"><strong style="color:#fff;">Estimated Project Timeline: </strong><span style="color:var(--teal);">${adminRec.timeline.total}</span><br/><span style="color:var(--muted);font-size:13px;">${adminRec.timeline.note}</span></div>`;
+    }
+    if (adminRec.estimatedSavings) {
+      html += `<div style="padding:14px 18px;background:rgba(245,166,35,0.06);border-radius:10px;margin-bottom:20px;"><strong style="color:#fff;">💰 Estimated Cost Savings: </strong><span style="color:var(--gold);">${adminRec.estimatedSavings.p25*100}% – ${adminRec.estimatedSavings.p75*100}% cloud spend reduction</span><br/><span style="color:var(--muted);font-size:13px;">${adminRec.estimatedSavings.note}</span></div>`;
+    }
+    adminRec.phases.forEach(phase => {
+      html += `<div class="phase-card"><div class="phase-header"><div class="phase-title">Phase ${phase.phase}: ${phase.name}</div><div class="phase-meta"><span class="phase-tag">⏱ ${phase.duration}</span><span class="badge badge-warn">${phase.priority||'High'}</span></div></div>`;
+      if (phase.objective) html += `<p style="color:var(--muted);font-size:13px;margin-bottom:12px;">${phase.objective}</p>`;
+      html += `<ol class="phase-steps">`;
+      (phase.steps||[]).forEach(step => { html += `<li>${step}</li>`; });
+      html += `</ol>`;
+      if (phase.tools?.length > 0) {
+        html += `<div style="margin-top:12px;"><div style="font-size:11px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px;">Tools</div><div class="tools-list">`;
+        phase.tools.forEach(t => { html += `<span class="tool-tag">${t}</span>`; });
+        html += `</div></div>`;
+      }
+      html += `</div>`;
+    });
+    if (adminRec.tools) {
+      html += `<h3 style="font-family:'Sora',sans-serif;font-size:16px;font-weight:600;margin:24px 0 16px;color:#fff;">Full Technology Stack</h3>`;
+      Object.entries(adminRec.tools).forEach(([cat, tools]) => {
+        html += `<div style="margin-bottom:12px;"><div style="font-size:12px;color:var(--muted);margin-bottom:6px;">${cat}</div><div class="tools-list">`;
+        tools.forEach(t => { html += `<span class="tool-tag">${t}</span>`; });
+        html += `</div></div>`;
+      });
+    }
+  } else {
+    html += `<div style="padding:20px;background:rgba(0,0,0,0.2);border-radius:10px;color:var(--muted);font-size:14px;">Admin recommendation data not available for this submission.</div>`;
+  }
+
+  html += `<div style="margin-top:24px;display:flex;gap:12px;flex-wrap:wrap;">
+    <button class="btn btn-primary btn-sm" onclick="downloadSubmission(${idx})">⬇ Download Full Report</button>
+    <button class="btn btn-secondary btn-sm" onclick="closeModal()">Close</button>
+  </div>`;
+
+  document.getElementById('subModalContent').innerHTML = html;
+  document.getElementById('subModal').classList.add('show');
+}
+
+function closeModal() { document.getElementById('subModal').classList.remove('show'); }
+document.getElementById('subModal').addEventListener('click', function(e) { if (e.target === this) closeModal(); });
+
+function downloadSubmission(idx) {
+  const subs = getSubmissions();
+  const s = subs[idx];
+  if (!s) return;
+  const blob = new Blob([JSON.stringify(s, null, 2)], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = `ae-assessment-${(s.clientCompany||'client').replace(/\s+/g,'-')}-${Date.now()}.json`;
+  a.click();
+}
+
+// ═════════════════════════════════════════════
+//  EXPORT
+// ═════════════════════════════════════════════
+function exportAll(fmt) {
+  const subs = getSubmissions();
+  if (subs.length === 0) { alert('No submissions to export.'); return; }
+  if (fmt === 'json') {
+    const blob = new Blob([JSON.stringify(subs, null, 2)], {type:'application/json'});
+    const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+    a.download = `ae-all-assessments-${Date.now()}.json`; a.click();
+  } else {
+    const headers = ['Company','Email','Phone','Type','CRI Score','Maturity','Date'];
+    const rows = subs.map(s => [s.clientCompany,s.clientEmail,s.clientPhone,s.type,s.cri,s.maturity,new Date(s.submittedAt||s.timestamp).toLocaleDateString()]);
+    const csv = [headers, ...rows].map(r => r.map(c => `"${c||''}"`).join(',')).join('\n');
+    const blob = new Blob([csv], {type:'text/csv'});
+    const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+    a.download = `ae-assessments-${Date.now()}.csv`; a.click();
+  }
+}
+
+function clearAll() {
+  if (confirm('This will delete all locally stored links and submissions. This cannot be undone. Continue?')) {
+    localStorage.removeItem('ae_links'); localStorage.removeItem('ae_submissions');
+    updateDashboard(); alert('All local data cleared.');
+  }
+}
+
+// ═════════════════════════════════════════════
+//  RECEIVE SUBMISSIONS (from assessment pages)
+//  Assessment pages post to this admin's localStorage
+// ═════════════════════════════════════════════
+window.addEventListener('storage', (e) => {
+  if (e.key === 'ae_new_submission') {
+    try {
+      const sub = JSON.parse(e.newValue);
+      const subs = getSubmissions();
+      subs.unshift(sub);
+      saveSubmissions(subs);
+      // Mark link as submitted
+      const links = getLinks();
+      const link = links.find(l => l.token === sub.token);
+      if (link) { link.status = 'submitted'; saveLinks(links); }
+      updateDashboard();
+    } catch(e) {}
+  }
+});
+
+// Init — only runs after login
+function initAdmin() {
+  updateDashboard();
+}
+
+// ═════════════════════════════════════════════
+//  ADMIN LOGIN GATE
+// ═════════════════════════════════════════════
+const ADMIN_PASSWORD = 'ActivEdge@Admin2025'; // ← CHANGE THIS before deploying to production
+
+function checkAdminPassword() {
+  const input = document.getElementById('adminPasswordInput').value;
+  const errEl = document.getElementById('loginError');
+  if (input === ADMIN_PASSWORD) {
+    document.getElementById('adminLoginGate').style.display = 'none';
+    document.getElementById('adminApp').style.display = 'block';
+    sessionStorage.setItem('ae_admin_auth', '1');
+    initAdmin();
+  } else {
+    errEl.style.display = 'block';
+    document.getElementById('adminPasswordInput').value = '';
+    document.getElementById('adminPasswordInput').focus();
+    // Brief shake animation
+    const gate = document.querySelector('#adminLoginGate > div');
+    gate.style.animation = 'shake 0.4s ease';
+    setTimeout(() => gate.style.animation = '', 400);
+  }
+}
+
+// Auto-restore session if already authenticated this browser session
+if (sessionStorage.getItem('ae_admin_auth') === '1') {
+  document.getElementById('adminLoginGate').style.display = 'none';
+  document.getElementById('adminApp').style.display = 'block';
+  initAdmin();
+}
+
+// Shake animation
+const shakeStyle = document.createElement('style');
+shakeStyle.textContent = '@keyframes shake{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-8px)}40%,80%{transform:translateX(8px)}}';
+document.head.appendChild(shakeStyle);
+</script>
+</div><!-- /adminApp -->
+</body>
+</html>

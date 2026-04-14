@@ -1,0 +1,1285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Azure Hosting & Deployment Guide — ActivEdge Assessment Portal</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap');
+:root{
+  --navy:#0a1628;--navy-mid:#112240;--navy-light:#1a3460;
+  --teal:#00c6a7;--teal-dim:#00a88d;--gold:#f5a623;
+  --azure:#0078d4;--azure-light:#2b88d8;
+  --white:#f0f4ff;--muted:#7b90b8;
+  --card-bg:rgba(17,34,64,0.85);--border:rgba(0,198,167,0.18);
+  --code-bg:#0d1b2e;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Space Grotesk',sans-serif;background:var(--navy);color:var(--white);min-height:100vh;line-height:1.6;}
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(0,198,167,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(0,198,167,0.03) 1px,transparent 1px);background-size:60px 60px;pointer-events:none;z-index:0;}
+
+/* ── LAYOUT ── */
+.page-wrap{display:flex;max-width:1400px;margin:0 auto;min-height:100vh;position:relative;z-index:1;}
+
+/* ── SIDEBAR TOC ── */
+.toc{width:280px;flex-shrink:0;position:sticky;top:0;height:100vh;overflow-y:auto;background:rgba(8,18,38,0.98);border-right:1px solid var(--border);padding:0;}
+.toc-logo{padding:28px 24px;border-bottom:1px solid var(--border);}
+.toc-logo-icon{width:40px;height:40px;background:linear-gradient(135deg,var(--azure),#005a9e);border-radius:10px;display:flex;align-items:center;justify-content:center;font-weight:800;font-family:'Sora',sans-serif;font-size:13px;color:#fff;margin-bottom:10px;}
+.toc-logo-name{font-family:'Sora',sans-serif;font-weight:700;font-size:14px;color:#fff;}
+.toc-logo-sub{font-size:10px;color:var(--azure-light);letter-spacing:1.5px;text-transform:uppercase;}
+.toc-section-label{padding:16px 24px 6px;font-size:10px;letter-spacing:2px;color:#2a4060;text-transform:uppercase;}
+.toc-item{padding:9px 24px;font-size:13px;color:var(--muted);cursor:pointer;border-left:3px solid transparent;transition:all 0.2s;display:flex;align-items:center;gap:8px;}
+.toc-item:hover{color:#c8d8f0;background:rgba(0,120,212,0.05);}
+.toc-item.active{color:#fff;border-left-color:var(--azure-light);background:rgba(0,120,212,0.08);}
+.toc-item .toc-num{width:20px;height:20px;border-radius:50%;background:rgba(0,120,212,0.2);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:var(--azure-light);flex-shrink:0;}
+.toc-item.done .toc-num{background:rgba(0,198,167,0.2);color:var(--teal);}
+.toc-item.done .toc-num::after{content:'✓';}
+
+/* ── CONTENT ── */
+.content{flex:1;padding:0;overflow-x:hidden;}
+
+/* ── HEADER HERO ── */
+.hero{padding:60px 56px 48px;border-bottom:1px solid var(--border);background:linear-gradient(135deg,rgba(0,120,212,0.06) 0%,rgba(0,198,167,0.04) 100%);}
+.hero-eyebrow{display:inline-flex;align-items:center;gap:8px;padding:5px 16px;border-radius:20px;background:rgba(0,120,212,0.12);border:1px solid rgba(0,120,212,0.3);font-size:11px;letter-spacing:2px;color:var(--azure-light);text-transform:uppercase;margin-bottom:24px;}
+.hero h1{font-family:'Sora',sans-serif;font-size:clamp(28px,3.5vw,44px);font-weight:800;line-height:1.15;color:#fff;margin-bottom:16px;}
+.hero h1 span{background:linear-gradient(90deg,var(--azure-light),var(--teal));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.hero-desc{font-size:16px;color:var(--muted);max-width:680px;line-height:1.7;margin-bottom:28px;}
+.hero-tags{display:flex;flex-wrap:wrap;gap:10px;}
+.hero-tag{padding:6px 14px;border-radius:20px;font-size:12px;font-weight:600;background:rgba(0,120,212,0.12);border:1px solid rgba(0,120,212,0.25);color:var(--azure-light);}
+.hero-tag.teal{background:rgba(0,198,167,0.1);border-color:rgba(0,198,167,0.25);color:var(--teal);}
+.hero-tag.gold{background:rgba(245,166,35,0.1);border-color:rgba(245,166,35,0.25);color:var(--gold);}
+
+/* ── SECTIONS ── */
+.section{padding:56px;border-bottom:1px solid rgba(255,255,255,0.04);}
+.section:last-child{border-bottom:none;}
+.step-eyebrow{display:inline-flex;align-items:center;gap:10px;margin-bottom:16px;}
+.step-badge{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,var(--azure),#005a9e);display:flex;align-items:center;justify-content:center;font-family:'Sora',sans-serif;font-weight:800;font-size:14px;color:#fff;flex-shrink:0;}
+.step-label{font-size:12px;letter-spacing:2px;color:var(--azure-light);text-transform:uppercase;font-weight:600;}
+.section h2{font-family:'Sora',sans-serif;font-size:clamp(20px,2.5vw,28px);font-weight:700;color:#fff;margin-bottom:12px;line-height:1.3;}
+.section-desc{font-size:15px;color:var(--muted);max-width:760px;line-height:1.7;margin-bottom:32px;}
+
+/* ── ARCHITECTURE DIAGRAM ── */
+.arch-diagram{background:var(--card-bg);border:1px solid var(--border);border-radius:16px;padding:32px;margin-bottom:32px;overflow-x:auto;}
+.arch-diagram h4{font-family:'Sora',sans-serif;font-size:14px;font-weight:600;color:var(--azure-light);text-transform:uppercase;letter-spacing:1px;margin-bottom:24px;}
+.arch-flow{display:flex;align-items:center;gap:0;flex-wrap:wrap;justify-content:center;}
+.arch-node{text-align:center;padding:16px 20px;background:rgba(0,120,212,0.1);border:1px solid rgba(0,120,212,0.25);border-radius:12px;min-width:120px;}
+.arch-node.teal{background:rgba(0,198,167,0.1);border-color:rgba(0,198,167,0.25);}
+.arch-node.gold{background:rgba(245,166,35,0.1);border-color:rgba(245,166,35,0.25);}
+.arch-node .node-icon{font-size:24px;margin-bottom:6px;}
+.arch-node .node-name{font-size:12px;font-weight:600;color:#fff;}
+.arch-node .node-sub{font-size:10px;color:var(--muted);margin-top:2px;}
+.arch-arrow{font-size:20px;color:var(--muted);padding:0 8px;display:flex;align-items:center;}
+
+/* ── STEP CARDS ── */
+.step-cards{display:flex;flex-direction:column;gap:16px;margin-bottom:32px;}
+.step-card{background:var(--card-bg);border:1px solid rgba(255,255,255,0.06);border-radius:14px;padding:24px 28px;position:relative;overflow:hidden;}
+.step-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:4px;background:linear-gradient(180deg,var(--azure),var(--teal));}
+.step-card-num{font-size:11px;letter-spacing:1.5px;color:var(--azure-light);text-transform:uppercase;font-weight:600;margin-bottom:8px;}
+.step-card h4{font-family:'Sora',sans-serif;font-size:16px;font-weight:700;color:#fff;margin-bottom:10px;}
+.step-card p{font-size:14px;color:var(--muted);line-height:1.7;margin-bottom:10px;}
+.step-card p:last-child{margin-bottom:0;}
+.step-card ul{list-style:none;display:flex;flex-direction:column;gap:6px;}
+.step-card ul li{font-size:14px;color:var(--muted);padding-left:20px;position:relative;line-height:1.6;}
+.step-card ul li::before{content:'→';position:absolute;left:0;color:var(--teal);font-size:12px;}
+
+/* ── CODE BLOCKS ── */
+.code-block{background:var(--code-bg);border:1px solid rgba(0,120,212,0.2);border-radius:12px;margin:16px 0;overflow:hidden;}
+.code-header{display:flex;align-items:center;justify-content:space-between;padding:10px 18px;background:rgba(0,120,212,0.1);border-bottom:1px solid rgba(0,120,212,0.15);}
+.code-lang{font-size:11px;letter-spacing:1px;color:var(--azure-light);text-transform:uppercase;font-weight:600;}
+.code-copy{font-size:11px;color:var(--muted);cursor:pointer;padding:4px 10px;border-radius:6px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);font-family:'Space Grotesk',sans-serif;transition:all 0.2s;}
+.code-copy:hover{background:rgba(255,255,255,0.1);color:#fff;}
+.code-block pre{padding:20px;overflow-x:auto;font-family:'JetBrains Mono',monospace;font-size:13px;line-height:1.7;color:#c8d8f0;}
+.code-block pre .cmd{color:#64dfdf;}
+.code-block pre .cmt{color:#4a6080;font-style:italic;}
+.code-block pre .str{color:#ffd080;}
+.code-block pre .kw{color:#79b8ff;}
+.code-block pre .val{color:#85e89d;}
+
+/* ── INFO BOXES ── */
+.info-box{border-radius:12px;padding:18px 22px;margin:20px 0;display:flex;gap:14px;align-items:flex-start;}
+.info-box.note{background:rgba(0,120,212,0.1);border:1px solid rgba(0,120,212,0.25);}
+.info-box.warn{background:rgba(245,166,35,0.1);border:1px solid rgba(245,166,35,0.25);}
+.info-box.success{background:rgba(0,198,167,0.1);border:1px solid rgba(0,198,167,0.25);}
+.info-box.danger{background:rgba(255,85,85,0.1);border:1px solid rgba(255,85,85,0.25);}
+.info-box .ib-icon{font-size:20px;flex-shrink:0;margin-top:1px;}
+.info-box .ib-text{font-size:14px;color:var(--muted);line-height:1.7;}
+.info-box .ib-text strong{color:#fff;}
+
+/* ── GRID CARDS ── */
+.resource-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px;margin:20px 0;}
+.resource-card{background:var(--card-bg);border:1px solid rgba(255,255,255,0.06);border-radius:12px;padding:20px;}
+.resource-card h5{font-family:'Sora',sans-serif;font-size:14px;font-weight:700;color:#fff;margin-bottom:6px;}
+.resource-card p{font-size:12px;color:var(--muted);line-height:1.5;}
+.resource-card .rc-tag{display:inline-block;padding:3px 10px;border-radius:20px;font-size:10px;font-weight:600;margin-top:8px;background:rgba(0,120,212,0.15);color:var(--azure-light);}
+
+/* ── TABLE ── */
+.data-table{width:100%;border-collapse:collapse;margin:20px 0;}
+.data-table th{padding:12px 16px;text-align:left;font-size:11px;letter-spacing:1px;color:var(--muted);text-transform:uppercase;border-bottom:1px solid rgba(255,255,255,0.06);}
+.data-table td{padding:14px 16px;font-size:13px;color:#c8d8f0;border-bottom:1px solid rgba(255,255,255,0.04);vertical-align:top;}
+.data-table tr:hover td{background:rgba(0,120,212,0.03);}
+.tag{display:inline-block;padding:2px 8px;border-radius:6px;font-size:11px;font-weight:600;}
+.tag-azure{background:rgba(0,120,212,0.15);color:var(--azure-light);}
+.tag-teal{background:rgba(0,198,167,0.15);color:var(--teal);}
+.tag-gold{background:rgba(245,166,35,0.15);color:var(--gold);}
+.tag-red{background:rgba(255,85,85,0.15);color:#ff9999;}
+
+/* ── TIMELINE ── */
+.timeline{position:relative;padding-left:32px;margin:24px 0;}
+.timeline::before{content:'';position:absolute;left:10px;top:8px;bottom:8px;width:2px;background:linear-gradient(180deg,var(--azure),var(--teal));}
+.tl-item{position:relative;margin-bottom:28px;}
+.tl-dot{position:absolute;left:-26px;top:4px;width:12px;height:12px;border-radius:50%;background:var(--azure);border:2px solid var(--navy);}
+.tl-phase{font-size:11px;letter-spacing:1.5px;color:var(--azure-light);text-transform:uppercase;font-weight:600;margin-bottom:4px;}
+.tl-title{font-family:'Sora',sans-serif;font-size:15px;font-weight:700;color:#fff;margin-bottom:6px;}
+.tl-desc{font-size:13px;color:var(--muted);line-height:1.6;}
+.tl-duration{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;background:rgba(0,198,167,0.1);color:var(--teal);margin-top:6px;}
+
+/* ── CHECKLIST ── */
+.checklist{display:flex;flex-direction:column;gap:10px;margin:20px 0;}
+.cl-item{display:flex;align-items:flex-start;gap:12px;padding:14px 18px;background:var(--card-bg);border:1px solid rgba(255,255,255,0.05);border-radius:10px;}
+.cl-check{width:20px;height:20px;border-radius:6px;background:rgba(0,198,167,0.15);border:1px solid rgba(0,198,167,0.3);display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--teal);flex-shrink:0;margin-top:1px;cursor:pointer;}
+.cl-check.done{background:var(--teal);color:var(--navy);}
+.cl-text{font-size:14px;color:#c8d8f0;line-height:1.5;}
+.cl-sub{font-size:12px;color:var(--muted);margin-top:3px;}
+
+/* ── PRINT ── */
+@media print{
+  .toc{display:none;}
+  .content{margin:0;}
+  body{background:#fff;color:#000;}
+}
+
+/* ── RESPONSIVE ── */
+@media(max-width:900px){
+  .toc{display:none;}
+  .section{padding:32px 24px;}
+  .hero{padding:40px 24px;}
+}
+</style>
+</head>
+<body>
+
+<div class="page-wrap">
+
+<!-- ── TABLE OF CONTENTS ── -->
+<aside class="toc" id="tocSidebar">
+  <div class="toc-logo">
+    <div class="toc-logo-icon">Az</div>
+    <div class="toc-logo-name">ActivEdge Technologies</div>
+    <div class="toc-logo-sub">Azure Deployment Guide</div>
+  </div>
+  <div class="toc-section-label">Overview</div>
+  <div class="toc-item" onclick="scrollTo('arch')"><div class="toc-num">A</div> Architecture Overview</div>
+  <div class="toc-section-label">Deployment Steps</div>
+  <div class="toc-item" onclick="scrollTo('step1')"><div class="toc-num">1</div> Prerequisites</div>
+  <div class="toc-item" onclick="scrollTo('step2')"><div class="toc-num">2</div> Storage Account Setup</div>
+  <div class="toc-item" onclick="scrollTo('step3')"><div class="toc-num">3</div> Upload Static Files</div>
+  <div class="toc-item" onclick="scrollTo('step4')"><div class="toc-num">4</div> Azure Function App</div>
+  <div class="toc-item" onclick="scrollTo('step5')"><div class="toc-num">5</div> Function: Token API</div>
+  <div class="toc-item" onclick="scrollTo('step6')"><div class="toc-num">6</div> Function: Submit API</div>
+  <div class="toc-item" onclick="scrollTo('step7')"><div class="toc-num">7</div> Configure CORS</div>
+  <div class="toc-item" onclick="scrollTo('step8')"><div class="toc-num">8</div> Update HTML Config</div>
+  <div class="toc-item" onclick="scrollTo('step9')"><div class="toc-num">9</div> Custom Domain (Optional)</div>
+  <div class="toc-item" onclick="scrollTo('step10')"><div class="toc-num">10</div> Admin Portal Access</div>
+  <div class="toc-section-label">Operations</div>
+  <div class="toc-item" onclick="scrollTo('monitoring')"><div class="toc-num">M</div> Monitoring & Alerts</div>
+  <div class="toc-item" onclick="scrollTo('costs')"><div class="toc-num">$</div> Cost Estimate</div>
+  <div class="toc-item" onclick="scrollTo('checklist')"><div class="toc-num">✓</div> Final Checklist</div>
+</aside>
+
+<!-- ── MAIN CONTENT ── -->
+<main class="content">
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-eyebrow">☁️ Azure Hosting Guide</div>
+  <h1>Deploy the ActivEdge Assessment Portal<br/><span>on Microsoft Azure</span></h1>
+  <p class="hero-desc">A complete, step-by-step guide to hosting the Cloud Readiness Assessment Portal on Azure Static Web Apps and Azure Functions — with token-gated links, submission storage, and an admin-only portal. Designed for simplicity with enterprise-grade reliability.</p>
+  <div class="hero-tags">
+    <div class="hero-tag">Azure Blob Storage</div>
+    <div class="hero-tag">Azure Functions</div>
+    <div class="hero-tag teal">Estimated Setup: 2–3 Hours</div>
+    <div class="hero-tag teal">Monthly Cost: ~$5–$15 USD</div>
+    <div class="hero-tag gold">No Coding Required</div>
+  </div>
+</div>
+
+<!-- ─────────────────────────────────────────── -->
+<!-- ARCHITECTURE OVERVIEW -->
+<!-- ─────────────────────────────────────────── -->
+<div class="section" id="arch">
+  <div class="step-eyebrow">
+    <div class="step-badge" style="background:linear-gradient(135deg,#0078d4,#005a9e);">A</div>
+    <div class="step-label">Architecture Overview</div>
+  </div>
+  <h2>How the System Works on Azure</h2>
+  <p class="section-desc">The portal uses a simple two-tier Azure architecture: static HTML files served from Azure Blob Storage, and a lightweight Azure Function App that handles token validation, creation, and submission storage. No servers to manage.</p>
+
+  <div class="arch-diagram">
+    <h4>System Architecture</h4>
+    <div class="arch-flow">
+      <div class="arch-node">
+        <div class="node-icon">💻</div>
+        <div class="node-name">Client Browser</div>
+        <div class="node-sub">Customer / Admin</div>
+      </div>
+      <div class="arch-arrow">→</div>
+      <div class="arch-node teal">
+        <div class="node-icon">🌐</div>
+        <div class="node-name">Azure Blob Storage</div>
+        <div class="node-sub">Static Website Hosting<br/>index.html, assessments<br/>admin.html</div>
+      </div>
+      <div class="arch-arrow">→</div>
+      <div class="arch-node">
+        <div class="node-icon">⚡</div>
+        <div class="node-name">Azure Functions</div>
+        <div class="node-sub">Token API<br/>Submit API<br/>List API</div>
+      </div>
+      <div class="arch-arrow">→</div>
+      <div class="arch-node gold">
+        <div class="node-icon">🗄️</div>
+        <div class="node-name">Azure Blob Storage</div>
+        <div class="node-sub">Token Store<br/>Submissions JSON<br/>Admin-only container</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="resource-grid">
+    <div class="resource-card">
+      <h5>Azure Storage Account</h5>
+      <p>Hosts all HTML files (static website) and stores submissions as JSON blobs. One account handles both roles.</p>
+      <div class="rc-tag">$web container · $submissions container</div>
+    </div>
+    <div class="resource-card">
+      <h5>Azure Function App</h5>
+      <p>Serverless backend: validates tokens, creates tokens, stores submissions. Scales to zero when idle.</p>
+      <div class="rc-tag">3 HTTP functions · Node.js 18</div>
+    </div>
+    <div class="resource-card">
+      <h5>Admin Portal (admin.html)</h5>
+      <p>Protected HTML page served from the same storage account. Only accessible via direct URL — not linked from the public portal.</p>
+      <div class="rc-tag">Password-protected UI</div>
+    </div>
+    <div class="resource-card">
+      <h5>Token System</h5>
+      <p>Each client link carries a unique token stored in blob storage. Expiry and single-use enforcement handled by the Function API.</p>
+      <div class="rc-tag">Timed · Single-use · Traceable</div>
+    </div>
+  </div>
+</div>
+
+<!-- ─────────────────────────────────────────── -->
+<!-- STEP 1: PREREQUISITES -->
+<!-- ─────────────────────────────────────────── -->
+<div class="section" id="step1">
+  <div class="step-eyebrow">
+    <div class="step-badge">1</div>
+    <div class="step-label">Step 1 — Prerequisites</div>
+  </div>
+  <h2>What You Need Before Starting</h2>
+  <p class="section-desc">You only need a Microsoft Azure subscription and the Azure CLI installed on your machine. No coding experience is required — all commands are copy-and-paste ready.</p>
+
+  <div class="step-cards">
+    <div class="step-card">
+      <div class="step-card-num">Requirement 1</div>
+      <h4>Azure Subscription</h4>
+      <p>You need an active Azure subscription. If you don't have one, create a free account at <strong style="color:var(--azure-light)">portal.azure.com</strong>. New accounts receive $200 USD free credit for 30 days.</p>
+      <p>Recommended subscription tier: <strong style="color:#fff">Pay-As-You-Go</strong> (estimated monthly cost for this portal: $5–$15 USD).</p>
+    </div>
+    <div class="step-card">
+      <div class="step-card-num">Requirement 2</div>
+      <h4>Azure CLI — Install on Your Machine</h4>
+      <p>The Azure CLI lets you run setup commands from your terminal (Windows Command Prompt, PowerShell, or Mac/Linux Terminal).</p>
+      <div class="code-block">
+        <div class="code-header"><span class="code-lang">Windows (PowerShell — Run as Administrator)</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
+        <pre><span class="cmt"># Install Azure CLI on Windows</span>
+<span class="cmd">winget install Microsoft.AzureCLI</span>
+
+<span class="cmt"># Or download the MSI installer from:</span>
+<span class="cmt"># https://aka.ms/installazurecliwindows</span></pre>
+      </div>
+      <div class="code-block">
+        <div class="code-header"><span class="code-lang">macOS (Terminal)</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
+        <pre><span class="cmd">brew update && brew install azure-cli</span></pre>
+      </div>
+    </div>
+    <div class="step-card">
+      <div class="step-card-num">Requirement 3</div>
+      <h4>Node.js 18+ (for Azure Functions)</h4>
+      <p>Required to deploy the Azure Function backend. Download from <strong style="color:var(--azure-light)">nodejs.org</strong> — install the LTS version.</p>
+      <div class="code-block">
+        <div class="code-header"><span class="code-lang">Verify Installation</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
+        <pre><span class="cmd">node --version</span>   <span class="cmt"># Should show v18.x or higher</span>
+<span class="cmd">npm --version</span>    <span class="cmt"># Should show 9.x or higher</span></pre>
+      </div>
+    </div>
+    <div class="step-card">
+      <div class="step-card-num">Requirement 4</div>
+      <h4>Azure Functions Core Tools</h4>
+      <p>Required for deploying the Function App from your terminal.</p>
+      <div class="code-block">
+        <div class="code-header"><span class="code-lang">Install via npm</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
+        <pre><span class="cmd">npm install -g azure-functions-core-tools@4 --unsafe-perm true</span></pre>
+      </div>
+    </div>
+  </div>
+
+  <div class="info-box note">
+    <div class="ib-icon">💡</div>
+    <div class="ib-text"><strong>No coding required.</strong> All the Azure Function code is provided ready-to-deploy in Step 4 and 5. You only need to copy, paste, and run the provided commands.</div>
+  </div>
+</div>
+
+<!-- ─────────────────────────────────────────── -->
+<!-- STEP 2: STORAGE ACCOUNT -->
+<!-- ─────────────────────────────────────────── -->
+<div class="section" id="step2">
+  <div class="step-eyebrow">
+    <div class="step-badge">2</div>
+    <div class="step-label">Step 2 — Azure Storage Account</div>
+  </div>
+  <h2>Create the Storage Account & Enable Static Website Hosting</h2>
+  <p class="section-desc">The storage account will host both your HTML files (public-facing website) and your submission data (private container). Run these commands in your terminal after logging into Azure.</p>
+
+  <div class="step-cards">
+    <div class="step-card">
+      <div class="step-card-num">2a — Login to Azure</div>
+      <h4>Authenticate Your Terminal</h4>
+      <div class="code-block">
+        <div class="code-header"><span class="code-lang">Azure CLI — Terminal / PowerShell</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
+        <pre><span class="cmt"># Login to your Azure account (browser will open)</span>
+<span class="cmd">az login</span>
+
+<span class="cmt"># Confirm your active subscription</span>
+<span class="cmd">az account show</span>
+
+<span class="cmt"># If you have multiple subscriptions, set the correct one:</span>
+<span class="cmd">az account set --subscription "YOUR_SUBSCRIPTION_ID"</span></pre>
+      </div>
+    </div>
+    <div class="step-card">
+      <div class="step-card-num">2b — Create Resource Group</div>
+      <h4>Organise All Azure Resources in One Group</h4>
+      <div class="code-block">
+        <div class="code-header"><span class="code-lang">Azure CLI</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
+        <pre><span class="cmt"># Create a resource group — change location if preferred (e.g. southafricanorth)</span>
+<span class="cmd">az group create \
+  --name <span class="str">activedge-assessment-rg</span> \
+  --location <span class="str">westeurope</span></span>
+
+<span class="cmt"># Recommended Azure regions closest to Nigeria:</span>
+<span class="cmt"># southafricanorth (Johannesburg) — Best for latency</span>
+<span class="cmt"># westeurope (Netherlands) — Good alternative</span>
+<span class="cmt"># northeurope (Ireland) — Good alternative</span></pre>
+      </div>
+    </div>
+    <div class="step-card">
+      <div class="step-card-num">2c — Create Storage Account</div>
+      <h4>This Hosts Your HTML Files and Submission Data</h4>
+      <div class="info-box warn">
+        <div class="ib-icon">⚠️</div>
+        <div class="ib-text"><strong>Storage account names must be globally unique, lowercase, 3–24 characters, letters and numbers only.</strong> Replace <code>activedgeassess</code> with your own unique name in ALL commands below.</div>
+      </div>
+      <div class="code-block">
+        <div class="code-header"><span class="code-lang">Azure CLI</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
+        <pre><span class="cmt"># Create the storage account</span>
+<span class="cmd">az storage account create \
+  --name <span class="str">activedgeassess</span> \
+  --resource-group <span class="str">activedge-assessment-rg</span> \
+  --location <span class="str">southafricanorth</span> \
+  --sku <span class="str">Standard_LRS</span> \
+  --kind <span class="str">StorageV2</span> \
+  --allow-blob-public-access <span class="val">true</span></span>
+
+<span class="cmt"># Enable static website hosting</span>
+<span class="cmd">az storage blob service-properties update \
+  --account-name <span class="str">activedgeassess</span> \
+  --static-website \
+  --index-document <span class="str">index.html</span> \
+  --404-document <span class="str">index.html</span></span>
+
+<span class="cmt"># Get the website URL (save this — it's your portal URL)</span>
+<span class="cmd">az storage account show \
+  --name <span class="str">activedgeassess</span> \
+  --resource-group <span class="str">activedge-assessment-rg</span> \
+  --query "primaryEndpoints.web" \
+  --output tsv</span></pre>
+      </div>
+      <p>📌 <strong style="color:var(--teal)">Save the URL output.</strong> It will look like: <code style="color:var(--gold)">https://activedgeassess.z6.web.core.windows.net/</code> — this is your portal address.</p>
+    </div>
+    <div class="step-card">
+      <div class="step-card-num">2d — Create Submissions Container</div>
+      <h4>Private Container for Assessment Submissions (Admin-Only)</h4>
+      <div class="code-block">
+        <div class="code-header"><span class="code-lang">Azure CLI</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
+        <pre><span class="cmt"># Create a PRIVATE container for storing submission JSON files</span>
+<span class="cmd">az storage container create \
+  --name <span class="str">submissions</span> \
+  --account-name <span class="str">activedgeassess</span> \
+  --public-access <span class="str">off</span></span>
+
+<span class="cmt"># Create a PRIVATE container for token management</span>
+<span class="cmd">az storage container create \
+  --name <span class="str">tokens</span> \
+  --account-name <span class="str">activedgeassess</span> \
+  --public-access <span class="str">off</span></span>
+
+<span class="cmt"># Get the storage connection string (save this for Function App)</span>
+<span class="cmd">az storage account show-connection-string \
+  --name <span class="str">activedgeassess</span> \
+  --resource-group <span class="str">activedge-assessment-rg</span> \
+  --query connectionString \
+  --output tsv</span></pre>
+      </div>
+      <p>📌 <strong style="color:var(--teal)">Save the connection string.</strong> It starts with <code style="color:var(--gold)">DefaultEndpointsProtocol=https;AccountName=...</code> — you will need this in Step 4.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ─────────────────────────────────────────── -->
+<!-- STEP 3: UPLOAD FILES -->
+<!-- ─────────────────────────────────────────── -->
+<div class="section" id="step3">
+  <div class="step-eyebrow">
+    <div class="step-badge">3</div>
+    <div class="step-label">Step 3 — Upload HTML Files</div>
+  </div>
+  <h2>Upload the Assessment Portal Files to Azure</h2>
+  <p class="section-desc">Upload all four HTML files to the <code>$web</code> container in your storage account. This makes them publicly accessible via your storage website URL. The admin.html file is uploaded here too — its protection comes from it not being linked anywhere publicly, plus the password gate in the UI.</p>
+
+  <div class="step-cards">
+    <div class="step-card">
+      <div class="step-card-num">3a — Navigate to Your Files</div>
+      <h4>Open Terminal in Your Assessment Folder</h4>
+      <div class="code-block">
+        <div class="code-header"><span class="code-lang">Terminal / PowerShell</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
+        <pre><span class="cmt"># Navigate to the folder containing your HTML files</span>
+<span class="cmd">cd /path/to/activedge-assessment</span>
+
+<span class="cmt"># Verify your files are present</span>
+<span class="cmd">ls</span>
+<span class="cmt"># Should show: index.html  assessment-onprem.html  assessment-cloud.html  admin.html</span></pre>
+      </div>
+    </div>
+    <div class="step-card">
+      <div class="step-card-num">3b — Upload All HTML Files</div>
+      <h4>Upload to the $web Static Container</h4>
+      <div class="code-block">
+        <div class="code-header"><span class="code-lang">Azure CLI — Upload All Files</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
+        <pre><span class="cmt"># Upload index.html</span>
+<span class="cmd">az storage blob upload \
+  --account-name <span class="str">activedgeassess</span> \
+  --container-name <span class="str">\$web</span> \
+  --name <span class="str">index.html</span> \
+  --file <span class="str">index.html</span> \
+  --content-type <span class="str">text/html</span> \
+  --overwrite</span>
+
+<span class="cmt"># Upload On-Premise assessment</span>
+<span class="cmd">az storage blob upload \
+  --account-name <span class="str">activedgeassess</span> \
+  --container-name <span class="str">\$web</span> \
+  --name <span class="str">assessment-onprem.html</span> \
+  --file <span class="str">assessment-onprem.html</span> \
+  --content-type <span class="str">text/html</span> \
+  --overwrite</span>
+
+<span class="cmt"># Upload Cloud Optimisation assessment</span>
+<span class="cmd">az storage blob upload \
+  --account-name <span class="str">activedgeassess</span> \
+  --container-name <span class="str">\$web</span> \
+  --name <span class="str">assessment-cloud.html</span> \
+  --file <span class="str">assessment-cloud.html</span> \
+  --content-type <span class="str">text/html</span> \
+  --overwrite</span>
+
+<span class="cmt"># Upload Admin portal</span>
+<span class="cmd">az storage blob upload \
+  --account-name <span class="str">activedgeassess</span> \
+  --container-name <span class="str">\$web</span> \
+  --name <span class="str">admin.html</span> \
+  --file <span class="str">admin.html</span> \
+  --content-type <span class="str">text/html</span> \
+  --overwrite</span></pre>
+      </div>
+    </div>
+    <div class="step-card">
+      <div class="step-card-num">3c — Verify Upload</div>
+      <h4>Test the Portal is Live</h4>
+      <div class="code-block">
+        <div class="code-header"><span class="code-lang">Azure CLI — List uploaded files</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
+        <pre><span class="cmd">az storage blob list \
+  --account-name <span class="str">activedgeassess</span> \
+  --container-name <span class="str">\$web</span> \
+  --output table</span></pre>
+      </div>
+      <p>Open your browser and visit your storage website URL (from Step 2c). You should see the ActivEdge Assessment Portal landing page.</p>
+    </div>
+  </div>
+
+  <div class="info-box success">
+    <div class="ib-icon">✅</div>
+    <div class="ib-text"><strong>Your portal is now live!</strong> However, token validation and submission storage will not work yet until Steps 4–6 are completed. Customers can browse but submissions will download as JSON files until the Function App is connected.</div>
+  </div>
+</div>
+
+<!-- ─────────────────────────────────────────── -->
+<!-- STEP 4: FUNCTION APP -->
+<!-- ─────────────────────────────────────────── -->
+<div class="section" id="step4">
+  <div class="step-eyebrow">
+    <div class="step-badge">4</div>
+    <div class="step-label">Step 4 — Azure Function App</div>
+  </div>
+  <h2>Create and Configure the Azure Function App</h2>
+  <p class="section-desc">The Function App is the backend engine: it validates tokens, creates tokens (for the admin portal), and stores assessment submissions to Blob Storage. It runs on a serverless Consumption Plan — you only pay when it's actually called.</p>
+
+  <div class="step-cards">
+    <div class="step-card">
+      <div class="step-card-num">4a — Create the Function App</div>
+      <h4>Deploy a Node.js 18 Serverless Function App</h4>
+      <div class="code-block">
+        <div class="code-header"><span class="code-lang">Azure CLI</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
+        <pre><span class="cmt"># Create a storage account for the Function App internals (separate from main storage)</span>
+<span class="cmd">az storage account create \
+  --name <span class="str">activedgefnstorage</span> \
+  --resource-group <span class="str">activedge-assessment-rg</span> \
+  --location <span class="str">southafricanorth</span> \
+  --sku <span class="str">Standard_LRS</span></span>
+
+<span class="cmt"># Create the Function App (Node.js 18, Consumption Plan)</span>
+<span class="cmd">az functionapp create \
+  --resource-group <span class="str">activedge-assessment-rg</span> \
+  --consumption-plan-location <span class="str">southafricanorth</span> \
+  --runtime <span class="str">node</span> \
+  --runtime-version <span class="str">18</span> \
+  --functions-version <span class="str">4</span> \
+  --name <span class="str">ae-assessment-fn</span> \
+  --storage-account <span class="str">activedgefnstorage</span> \
+  --os-type <span class="str">Linux</span></span>
+
+<span class="cmt"># Add the main storage connection string as an app setting</span>
+<span class="cmt"># Replace YOUR_CONNECTION_STRING with the value saved from Step 2d</span>
+<span class="cmd">az functionapp config appsettings set \
+  --name <span class="str">ae-assessment-fn</span> \
+  --resource-group <span class="str">activedge-assessment-rg</span> \
+  --settings <span class="str">"STORAGE_CONNECTION=YOUR_CONNECTION_STRING"</span></span>
+
+<span class="cmt"># Get your Function App URL (save this)</span>
+<span class="cmd">az functionapp show \
+  --name <span class="str">ae-assessment-fn</span> \
+  --resource-group <span class="str">activedge-assessment-rg</span> \
+  --query defaultHostName \
+  --output tsv</span></pre>
+      </div>
+      <p>📌 Your Function App URL will look like: <code style="color:var(--gold)">ae-assessment-fn.azurewebsites.net</code> — save this for Step 8.</p>
+    </div>
+    <div class="step-card">
+      <div class="step-card-num">4b — Create Local Function Project</div>
+      <h4>Set Up the Function Code on Your Computer</h4>
+      <div class="code-block">
+        <div class="code-header"><span class="code-lang">Terminal</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
+        <pre><span class="cmt"># Create a new folder for the Function App code</span>
+<span class="cmd">mkdir ae-functions && cd ae-functions</span>
+
+<span class="cmt"># Initialise a new Azure Functions project (Node.js)</span>
+<span class="cmd">func init --worker-runtime node --language javascript</span>
+
+<span class="cmt"># The folder should now contain: host.json, local.settings.json, package.json</span>
+<span class="cmd">ls</span></pre>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ─────────────────────────────────────────── -->
+<!-- STEP 5: FUNCTION CODE -->
+<!-- ─────────────────────────────────────────── -->
+<div class="section" id="step5">
+  <div class="step-eyebrow">
+    <div class="step-badge">5</div>
+    <div class="step-label">Step 5 — Function Code (Copy & Paste)</div>
+  </div>
+  <h2>Create the Three API Functions</h2>
+  <p class="section-desc">Copy and paste each function below into your <code>ae-functions</code> project folder. Each function is a separate file in its own subfolder. No modifications needed — just copy exactly as shown.</p>
+
+  <div class="step-cards">
+    <div class="step-card">
+      <div class="step-card-num">Function 1 of 3</div>
+      <h4>validate-token — Checks if a link is valid, not expired, and not used</h4>
+      <div class="code-block">
+        <div class="code-header"><span class="code-lang">File: ae-functions/validate-token/index.js</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
+        <pre><span class="kw">const</span> { BlobServiceClient } = require(<span class="str">"@azure/storage-blob"</span>);
+
+module.exports = <span class="kw">async function</span>(context, req) {
+  <span class="kw">const</span> token = req.query.token;
+  <span class="kw">if</span> (!token) {
+    context.res = { status: 400, body: { valid: <span class="val">false</span>, reason: <span class="str">"No token provided"</span> }};
+    <span class="kw">return</span>;
+  }
+
+  <span class="kw">try</span> {
+    <span class="kw">const</span> client = BlobServiceClient.fromConnectionString(process.env.STORAGE_CONNECTION);
+    <span class="kw">const</span> container = client.getContainerClient(<span class="str">"tokens"</span>);
+    <span class="kw">const</span> blob = container.getBlobClient(token + <span class="str">".json"</span>);
+    
+    <span class="kw">const</span> download = <span class="kw">await</span> blob.download();
+    <span class="kw">const</span> text = <span class="kw">await</span> streamToText(download.readableStreamBody);
+    <span class="kw">const</span> data = JSON.parse(text);
+    
+    <span class="cmt">// Check expiry</span>
+    <span class="kw">if</span> (<span class="kw">new</span> Date(data.expiresAt) &lt; <span class="kw">new</span> Date()) {
+      context.res = { body: { valid: <span class="val">false</span>, reason: <span class="str">"This assessment link has expired."</span> }};
+      <span class="kw">return</span>;
+    }
+    <span class="cmt">// Check already used</span>
+    <span class="kw">if</span> (data.status === <span class="str">"submitted"</span>) {
+      context.res = { body: { valid: <span class="val">false</span>, reason: <span class="str">"This link has already been submitted."</span> }};
+      <span class="kw">return</span>;
+    }
+    
+    context.res = { body: { valid: <span class="val">true</span>, assessmentType: data.type, company: data.company }};
+  } <span class="kw">catch</span>(e) {
+    context.res = { body: { valid: <span class="val">false</span>, reason: <span class="str">"Invalid or unrecognised link."</span> }};
+  }
+};
+
+<span class="kw">async function</span> streamToText(stream) {
+  <span class="kw">const</span> chunks = [];
+  <span class="kw">for await</span> (<span class="kw">const</span> chunk <span class="kw">of</span> stream) chunks.push(chunk);
+  <span class="kw">return</span> Buffer.concat(chunks).toString(<span class="str">"utf-8"</span>);
+}</pre>
+      </div>
+      <div class="code-block">
+        <div class="code-header"><span class="code-lang">File: ae-functions/validate-token/function.json</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
+        <pre>{
+  <span class="str">"bindings"</span>: [{
+    <span class="str">"authLevel"</span>: <span class="str">"anonymous"</span>,
+    <span class="str">"type"</span>: <span class="str">"httpTrigger"</span>,
+    <span class="str">"direction"</span>: <span class="str">"in"</span>,
+    <span class="str">"name"</span>: <span class="str">"req"</span>,
+    <span class="str">"methods"</span>: [<span class="str">"get"</span>],
+    <span class="str">"route"</span>: <span class="str">"validate-token"</span>
+  },
+  {
+    <span class="str">"type"</span>: <span class="str">"http"</span>,
+    <span class="str">"direction"</span>: <span class="str">"out"</span>,
+    <span class="str">"name"</span>: <span class="str">"res"</span>
+  }]
+}</pre>
+      </div>
+    </div>
+
+    <div class="step-card">
+      <div class="step-card-num">Function 2 of 3</div>
+      <h4>create-token — Admin creates a new assessment link (called from admin.html)</h4>
+      <div class="code-block">
+        <div class="code-header"><span class="code-lang">File: ae-functions/create-token/index.js</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
+        <pre><span class="kw">const</span> { BlobServiceClient } = require(<span class="str">"@azure/storage-blob"</span>);
+
+module.exports = <span class="kw">async function</span>(context, req) {
+  <span class="kw">const</span> body = req.body;
+  <span class="kw">if</span> (!body || !body.token) {
+    context.res = { status: 400, body: { success: <span class="val">false</span> }};
+    <span class="kw">return</span>;
+  }
+
+  <span class="kw">try</span> {
+    <span class="kw">const</span> client = BlobServiceClient.fromConnectionString(process.env.STORAGE_CONNECTION);
+    <span class="kw">const</span> container = client.getContainerClient(<span class="str">"tokens"</span>);
+    <span class="kw">await</span> container.createIfNotExists();
+
+    <span class="kw">const</span> blob = container.getBlockBlobClient(body.token + <span class="str">".json"</span>);
+    <span class="kw">const</span> data = JSON.stringify({
+      token:      body.token,
+      company:    body.company,
+      email:      body.email,
+      type:       body.type,
+      notes:      body.notes,
+      expiresAt:  body.expiresAt,
+      status:     <span class="str">"pending"</span>,
+      createdAt:  <span class="kw">new</span> Date().toISOString()
+    });
+    <span class="kw">await</span> blob.upload(data, Buffer.byteLength(data), {
+      blobHTTPHeaders: { blobContentType: <span class="str">"application/json"</span> }
+    });
+
+    context.res = { body: { success: <span class="val">true</span> }};
+  } <span class="kw">catch</span>(e) {
+    context.res = { status: 500, body: { success: <span class="val">false</span>, error: e.message }};
+  }
+};</pre>
+      </div>
+      <div class="code-block">
+        <div class="code-header"><span class="code-lang">File: ae-functions/create-token/function.json</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
+        <pre>{
+  <span class="str">"bindings"</span>: [{
+    <span class="str">"authLevel"</span>: <span class="str">"anonymous"</span>,
+    <span class="str">"type"</span>: <span class="str">"httpTrigger"</span>,
+    <span class="str">"direction"</span>: <span class="str">"in"</span>,
+    <span class="str">"name"</span>: <span class="str">"req"</span>,
+    <span class="str">"methods"</span>: [<span class="str">"post"</span>],
+    <span class="str">"route"</span>: <span class="str">"create-token"</span>
+  },
+  {
+    <span class="str">"type"</span>: <span class="str">"http"</span>,
+    <span class="str">"direction"</span>: <span class="str">"out"</span>,
+    <span class="str">"name"</span>: <span class="str">"res"</span>
+  }]
+}</pre>
+      </div>
+    </div>
+
+    <div class="step-card">
+      <div class="step-card-num">Function 3 of 3</div>
+      <h4>submit-assessment — Saves completed assessment to Blob Storage & marks token as used</h4>
+      <div class="code-block">
+        <div class="code-header"><span class="code-lang">File: ae-functions/submit-assessment/index.js</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
+        <pre><span class="kw">const</span> { BlobServiceClient } = require(<span class="str">"@azure/storage-blob"</span>);
+
+module.exports = <span class="kw">async function</span>(context, req) {
+  <span class="kw">const</span> payload = req.body;
+  <span class="kw">if</span> (!payload) {
+    context.res = { status: 400, body: { success: <span class="val">false</span> }};
+    <span class="kw">return</span>;
+  }
+
+  <span class="kw">try</span> {
+    <span class="kw">const</span> client = BlobServiceClient.fromConnectionString(process.env.STORAGE_CONNECTION);
+    
+    <span class="cmt">// 1. Save submission to /submissions container</span>
+    <span class="kw">const</span> submissionsContainer = client.getContainerClient(<span class="str">"submissions"</span>);
+    <span class="kw">await</span> submissionsContainer.createIfNotExists();
+    
+    <span class="kw">const</span> ts = <span class="kw">new</span> Date().toISOString().replace(/[:.]/g, <span class="str">"-"</span>);
+    <span class="kw">const</span> company = (payload.clientCompany || <span class="str">"unknown"</span>).replace(/\s+/g, <span class="str">"-"</span>).slice(0, 30);
+    <span class="kw">const</span> filename = <span class="str">`${ts}_${company}_${payload.type || "assessment"}.json`</span>;
+    
+    <span class="kw">const</span> submissionBlob = submissionsContainer.getBlockBlobClient(filename);
+    <span class="kw">const</span> data = JSON.stringify(payload, <span class="kw">null</span>, 2);
+    <span class="kw">await</span> submissionBlob.upload(data, Buffer.byteLength(data), {
+      blobHTTPHeaders: { blobContentType: <span class="str">"application/json"</span> }
+    });
+
+    <span class="cmt">// 2. Mark token as submitted (if token present)</span>
+    <span class="kw">if</span> (payload.token) {
+      <span class="kw">const</span> tokensContainer = client.getContainerClient(<span class="str">"tokens"</span>);
+      <span class="kw">const</span> tokenBlob = tokensContainer.getBlockBlobClient(payload.token + <span class="str">".json"</span>);
+      <span class="kw">try</span> {
+        <span class="kw">const</span> dl = <span class="kw">await</span> tokenBlob.download();
+        <span class="kw">const</span> txt = <span class="kw">await</span> streamToText(dl.readableStreamBody);
+        <span class="kw">const</span> tokenData = JSON.parse(txt);
+        tokenData.status = <span class="str">"submitted"</span>;
+        tokenData.submittedAt = <span class="kw">new</span> Date().toISOString();
+        <span class="kw">const</span> updated = JSON.stringify(tokenData);
+        <span class="kw">await</span> tokenBlob.upload(updated, Buffer.byteLength(updated), {
+          blobHTTPHeaders: { blobContentType: <span class="str">"application/json"</span> }
+        });
+      } <span class="kw">catch</span>(e) { <span class="cmt">/* token not found — continue anyway */</span> }
+    }
+
+    context.res = { body: { success: <span class="val">true</span>, filename }};
+  } <span class="kw">catch</span>(e) {
+    context.res = { status: 500, body: { success: <span class="val">false</span>, error: e.message }};
+  }
+};
+
+<span class="kw">async function</span> streamToText(stream) {
+  <span class="kw">const</span> chunks = [];
+  <span class="kw">for await</span> (<span class="kw">const</span> chunk <span class="kw">of</span> stream) chunks.push(chunk);
+  <span class="kw">return</span> Buffer.concat(chunks).toString(<span class="str">"utf-8"</span>);
+}</pre>
+      </div>
+      <div class="code-block">
+        <div class="code-header"><span class="code-lang">File: ae-functions/submit-assessment/function.json</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
+        <pre>{
+  <span class="str">"bindings"</span>: [{
+    <span class="str">"authLevel"</span>: <span class="str">"anonymous"</span>,
+    <span class="str">"type"</span>: <span class="str">"httpTrigger"</span>,
+    <span class="str">"direction"</span>: <span class="str">"in"</span>,
+    <span class="str">"name"</span>: <span class="str">"req"</span>,
+    <span class="str">"methods"</span>: [<span class="str">"post"</span>],
+    <span class="str">"route"</span>: <span class="str">"submit-assessment"</span>
+  },
+  {
+    <span class="str">"type"</span>: <span class="str">"http"</span>,
+    <span class="str">"direction"</span>: <span class="str">"out"</span>,
+    <span class="str">"name"</span>: <span class="str">"res"</span>
+  }]
+}</pre>
+      </div>
+    </div>
+
+    <div class="step-card">
+      <div class="step-card-num">4 — Install Dependencies & Deploy</div>
+      <h4>Install the Azure Storage SDK and Deploy to Azure</h4>
+      <div class="code-block">
+        <div class="code-header"><span class="code-lang">Terminal — Run from ae-functions folder</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
+        <pre><span class="cmt"># Install the Azure Storage Blob SDK</span>
+<span class="cmd">npm install @azure/storage-blob</span>
+
+<span class="cmt"># Add connection string to local settings for testing</span>
+<span class="cmt"># Open local.settings.json and add your STORAGE_CONNECTION value:</span>
+<span class="cmt"># "STORAGE_CONNECTION": "DefaultEndpointsProtocol=https;AccountName=..."</span>
+
+<span class="cmt"># Deploy to Azure (this may take 2–3 minutes)</span>
+<span class="cmd">func azure functionapp publish <span class="str">ae-assessment-fn</span> --build remote</span>
+
+<span class="cmt"># Verify functions are deployed</span>
+<span class="cmd">az functionapp function list \
+  --name <span class="str">ae-assessment-fn</span> \
+  --resource-group <span class="str">activedge-assessment-rg</span> \
+  --output table</span></pre>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ─────────────────────────────────────────── -->
+<!-- STEP 6: LIST-SUBMISSIONS FUNCTION -->
+<!-- ─────────────────────────────────────────── -->
+<div class="section" id="step6">
+  <div class="step-eyebrow">
+    <div class="step-badge">6</div>
+    <div class="step-label">Step 6 — List Submissions API</div>
+  </div>
+  <h2>Optional: Enable Cloud-Synced Admin Submissions View</h2>
+  <p class="section-desc">This optional function lets the admin portal fetch submissions directly from Azure Blob Storage, so assessments submitted from any browser appear in the admin portal — not just the local browser that submitted them.</p>
+
+  <div class="step-cards">
+    <div class="step-card">
+      <div class="step-card-num">Function 4 (Optional)</div>
+      <h4>list-submissions — Returns all stored assessment JSON files</h4>
+      <div class="code-block">
+        <div class="code-header"><span class="code-lang">File: ae-functions/list-submissions/index.js</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
+        <pre><span class="kw">const</span> { BlobServiceClient } = require(<span class="str">"@azure/storage-blob"</span>);
+
+module.exports = <span class="kw">async function</span>(context, req) {
+  <span class="cmt">// Simple admin key check — set AE_ADMIN_KEY in Function App settings</span>
+  <span class="kw">const</span> adminKey = req.headers[<span class="str">"x-admin-key"</span>];
+  <span class="kw">if</span> (adminKey !== process.env.AE_ADMIN_KEY) {
+    context.res = { status: 401, body: { error: <span class="str">"Unauthorised"</span> }};
+    <span class="kw">return</span>;
+  }
+
+  <span class="kw">try</span> {
+    <span class="kw">const</span> client = BlobServiceClient.fromConnectionString(process.env.STORAGE_CONNECTION);
+    <span class="kw">const</span> container = client.getContainerClient(<span class="str">"submissions"</span>);
+    
+    <span class="kw">const</span> submissions = [];
+    <span class="kw">for await</span> (<span class="kw">const</span> blob <span class="kw">of</span> container.listBlobsFlat()) {
+      <span class="kw">const</span> blobClient = container.getBlobClient(blob.name);
+      <span class="kw">const</span> dl = <span class="kw">await</span> blobClient.download();
+      <span class="kw">const</span> txt = <span class="kw">await</span> streamToText(dl.readableStreamBody);
+      <span class="kw">try</span> { submissions.push(JSON.parse(txt)); } <span class="kw">catch</span>(e) {}
+    }
+    
+    submissions.sort((a,b) =>
+      <span class="kw">new</span> Date(b.submittedAt || b.timestamp) - <span class="kw">new</span> Date(a.submittedAt || a.timestamp)
+    );
+    
+    context.res = { body: { submissions }};
+  } <span class="kw">catch</span>(e) {
+    context.res = { status: 500, body: { error: e.message }};
+  }
+};
+
+<span class="kw">async function</span> streamToText(stream) {
+  <span class="kw">const</span> chunks = [];
+  <span class="kw">for await</span> (<span class="kw">const</span> chunk <span class="kw">of</span> stream) chunks.push(chunk);
+  <span class="kw">return</span> Buffer.concat(chunks).toString(<span class="str">"utf-8"</span>);
+}</pre>
+      </div>
+      <div class="code-block">
+        <div class="code-header"><span class="code-lang">Set the Admin Key in Function App Settings</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
+        <pre><span class="cmt"># Set a secret admin key (choose your own strong password)</span>
+<span class="cmd">az functionapp config appsettings set \
+  --name <span class="str">ae-assessment-fn</span> \
+  --resource-group <span class="str">activedge-assessment-rg</span> \
+  --settings <span class="str">"AE_ADMIN_KEY=ActivEdge@Admin2025#SecureKey"</span></span>
+
+<span class="cmt"># Set the same key in admin.html — search for AE_ADMIN_KEY in admin.html</span>
+<span class="cmt"># and replace the placeholder with your chosen key</span></pre>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ─────────────────────────────────────────── -->
+<!-- STEP 7: CORS -->
+<!-- ─────────────────────────────────────────── -->
+<div class="section" id="step7">
+  <div class="step-eyebrow">
+    <div class="step-badge">7</div>
+    <div class="step-label">Step 7 — CORS Configuration</div>
+  </div>
+  <h2>Allow Your Portal to Call the Function API</h2>
+  <p class="section-desc">CORS (Cross-Origin Resource Sharing) must be configured on the Function App to allow your Blob Storage website to make API calls. Without this, the browser will block all API requests.</p>
+
+  <div class="step-cards">
+    <div class="step-card">
+      <div class="step-card-num">7a — Configure CORS</div>
+      <h4>Allow Requests from Your Storage Website Domain</h4>
+      <div class="code-block">
+        <div class="code-header"><span class="code-lang">Azure CLI</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
+        <pre><span class="cmt"># Replace the URL below with YOUR actual storage website URL from Step 2c</span>
+<span class="cmd">az functionapp cors add \
+  --name <span class="str">ae-assessment-fn</span> \
+  --resource-group <span class="str">activedge-assessment-rg</span> \
+  --allowed-origins <span class="str">"https://activedgeassess.z6.web.core.windows.net"</span></span>
+
+<span class="cmt"># Also add localhost for local testing</span>
+<span class="cmd">az functionapp cors add \
+  --name <span class="str">ae-assessment-fn</span> \
+  --resource-group <span class="str">activedge-assessment-rg</span> \
+  --allowed-origins <span class="str">"http://localhost:3000"</span></span>
+
+<span class="cmt"># If you add a custom domain later, add it here too</span>
+<span class="cmd">az functionapp cors add \
+  --name <span class="str">ae-assessment-fn</span> \
+  --resource-group <span class="str">activedge-assessment-rg</span> \
+  --allowed-origins <span class="str">"https://assessment.activedgetechnologies.com"</span></span>
+
+<span class="cmt"># Verify CORS settings</span>
+<span class="cmd">az functionapp cors show \
+  --name <span class="str">ae-assessment-fn</span> \
+  --resource-group <span class="str">activedge-assessment-rg</span></span></pre>
+      </div>
+    </div>
+  </div>
+
+  <div class="info-box warn">
+    <div class="ib-icon">⚠️</div>
+    <div class="ib-text"><strong>CORS is the most common setup issue.</strong> If your assessment portal shows API errors or token validation fails, the first thing to check is that the CORS origin URL exactly matches your storage website URL — including the <code>https://</code> prefix and no trailing slash.</div>
+  </div>
+</div>
+
+<!-- ─────────────────────────────────────────── -->
+<!-- STEP 8: UPDATE HTML CONFIG -->
+<!-- ─────────────────────────────────────────── -->
+<div class="section" id="step8">
+  <div class="step-eyebrow">
+    <div class="step-badge">8</div>
+    <div class="step-label">Step 8 — Update HTML Configuration</div>
+  </div>
+  <h2>Connect Your HTML Files to the Azure Function App</h2>
+  <p class="section-desc">Each HTML file has a <code>FUNCTION_BASE</code> variable at the top of its script section. You need to update this with your actual Function App URL, then re-upload the files to Azure.</p>
+
+  <div class="step-cards">
+    <div class="step-card">
+      <div class="step-card-num">8a — Update Each HTML File</div>
+      <h4>Set the Function App URL in All 4 Files</h4>
+      <p>Open each of the four HTML files in a text editor (Notepad, VS Code, etc.) and find this line near the bottom:</p>
+      <div class="code-block">
+        <div class="code-header"><span class="code-lang">Find this line in index.html, assessment-onprem.html, assessment-cloud.html, admin.html</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
+        <pre><span class="kw">const</span> FUNCTION_BASE = window.FUNCTION_BASE || <span class="str">''</span>;</pre>
+      </div>
+      <p>Replace it with your actual Function App URL:</p>
+      <div class="code-block">
+        <div class="code-header"><span class="code-lang">Replace with your Function App URL</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
+        <pre><span class="kw">const</span> FUNCTION_BASE = window.FUNCTION_BASE || <span class="str">'https://ae-assessment-fn.azurewebsites.net'</span>;</pre>
+      </div>
+      <p>Do this for <strong style="color:#fff">all four HTML files</strong>: <code>index.html</code>, <code>assessment-onprem.html</code>, <code>assessment-cloud.html</code>, and <code>admin.html</code>.</p>
+    </div>
+    <div class="step-card">
+      <div class="step-card-num">8b — Re-Upload Updated Files</div>
+      <h4>Overwrite the Files in Azure with the Updated Versions</h4>
+      <div class="code-block">
+        <div class="code-header"><span class="code-lang">Azure CLI — Batch re-upload all files</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
+        <pre><span class="cmt"># Run from your activedge-assessment folder</span>
+<span class="kw">for</span> file <span class="kw">in</span> index.html assessment-onprem.html assessment-cloud.html admin.html; <span class="kw">do</span>
+  az storage blob upload \
+    --account-name <span class="str">activedgeassess</span> \
+    --container-name <span class="str">\$web</span> \
+    --name <span class="str">"$file"</span> \
+    --file <span class="str">"$file"</span> \
+    --content-type <span class="str">text/html</span> \
+    --overwrite
+  echo <span class="str">"Uploaded: $file"</span>
+<span class="kw">done</span>
+
+<span class="cmt"># Windows PowerShell equivalent:</span>
+<span class="kw">foreach</span> ($file <span class="kw">in</span> @(<span class="str">"index.html"</span>, <span class="str">"assessment-onprem.html"</span>, <span class="str">"assessment-cloud.html"</span>, <span class="str">"admin.html"</span>)) {
+  az storage blob upload `
+    --account-name <span class="str">activedgeassess</span> `
+    --container-name <span class="str">'$web'</span> `
+    --name $file `
+    --file $file `
+    --content-type <span class="str">text/html</span> `
+    --overwrite
+}</pre>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ─────────────────────────────────────────── -->
+<!-- STEP 9: CUSTOM DOMAIN -->
+<!-- ─────────────────────────────────────────── -->
+<div class="section" id="step9">
+  <div class="step-eyebrow">
+    <div class="step-badge">9</div>
+    <div class="step-label">Step 9 — Custom Domain (Optional but Recommended)</div>
+  </div>
+  <h2>Map assessment.activedgetechnologies.com to Your Portal</h2>
+  <p class="section-desc">Instead of sharing a long Azure URL with clients, you can map a clean subdomain like <code>assessment.activedgetechnologies.com</code> to your portal. This requires access to your domain DNS settings.</p>
+
+  <div class="step-cards">
+    <div class="step-card">
+      <div class="step-card-num">9a — Azure CDN Setup (Enables Custom Domain + HTTPS)</div>
+      <h4>Create an Azure CDN Profile Pointing to Your Storage Website</h4>
+      <div class="code-block">
+        <div class="code-header"><span class="code-lang">Azure CLI</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
+        <pre><span class="cmt"># Create a CDN Profile (Standard Microsoft tier)</span>
+<span class="cmd">az cdn profile create \
+  --name <span class="str">activedge-cdn</span> \
+  --resource-group <span class="str">activedge-assessment-rg</span> \
+  --sku <span class="str">Standard_Microsoft</span></span>
+
+<span class="cmt"># Create CDN Endpoint pointing to your storage website</span>
+<span class="cmt"># Replace the origin with your actual storage website hostname (without https://)</span>
+<span class="cmd">az cdn endpoint create \
+  --name <span class="str">activedge-assessment</span> \
+  --profile-name <span class="str">activedge-cdn</span> \
+  --resource-group <span class="str">activedge-assessment-rg</span> \
+  --origin <span class="str">activedgeassess.z6.web.core.windows.net</span> \
+  --origin-host-header <span class="str">activedgeassess.z6.web.core.windows.net</span></span></pre>
+      </div>
+    </div>
+    <div class="step-card">
+      <div class="step-card-num">9b — DNS Configuration</div>
+      <h4>Add a CNAME Record in Your Domain Registrar</h4>
+      <p>Log into your domain registrar (GoDaddy, Namecheap, etc.) or DNS provider and add this record:</p>
+      <table class="data-table" style="margin:16px 0;">
+        <thead><tr><th>Type</th><th>Name / Host</th><th>Value / Points To</th><th>TTL</th></tr></thead>
+        <tbody>
+          <tr><td><span class="tag tag-azure">CNAME</span></td><td><code>assessment</code></td><td><code>activedge-assessment.azureedge.net</code></td><td>3600</td></tr>
+        </tbody>
+      </table>
+      <p>After DNS propagates (can take up to 24 hours), run this command to enable the custom domain and HTTPS:</p>
+      <div class="code-block">
+        <div class="code-header"><span class="code-lang">Azure CLI</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
+        <pre><span class="cmt"># Add custom domain to CDN endpoint</span>
+<span class="cmd">az cdn custom-domain create \
+  --endpoint-name <span class="str">activedge-assessment</span> \
+  --profile-name <span class="str">activedge-cdn</span> \
+  --resource-group <span class="str">activedge-assessment-rg</span> \
+  --name <span class="str">assessment-activedge</span> \
+  --hostname <span class="str">assessment.activedgetechnologies.com</span></span>
+
+<span class="cmt"># Enable HTTPS (free SSL certificate from Azure)</span>
+<span class="cmd">az cdn custom-domain enable-https \
+  --endpoint-name <span class="str">activedge-assessment</span> \
+  --profile-name <span class="str">activedge-cdn</span> \
+  --resource-group <span class="str">activedge-assessment-rg</span> \
+  --name <span class="str">assessment-activedge</span></span></pre>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ─────────────────────────────────────────── -->
+<!-- STEP 10: ADMIN PORTAL ACCESS -->
+<!-- ─────────────────────────────────────────── -->
+<div class="section" id="step10">
+  <div class="step-eyebrow">
+    <div class="step-badge">10</div>
+    <div class="step-label">Step 10 — Admin Portal Access & Security</div>
+  </div>
+  <h2>Access the Admin Portal and Keep it Secure</h2>
+  <p class="section-desc">The admin.html is hosted in the same $web container but is never linked from the public portal. Access it directly by navigating to the URL. It is protected by an in-page password gate.</p>
+
+  <div class="step-cards">
+    <div class="step-card">
+      <div class="step-card-num">Admin URL</div>
+      <h4>Your Admin Portal Address</h4>
+      <div class="code-block">
+        <div class="code-header"><span class="code-lang">Admin Portal URL formats</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
+        <pre><span class="cmt"># Using Azure Blob Storage URL (default):</span>
+https://activedgeassess.z6.web.core.windows.net/admin.html
+
+<span class="cmt"># Using custom domain (after Step 9):</span>
+https://assessment.activedgetechnologies.com/admin.html
+
+<span class="cmt"># Share ONLY with the ActivEdge team — not with clients</span></pre>
+      </div>
+    </div>
+    <div class="step-card">
+      <div class="step-card-num">Admin Password Setup</div>
+      <h4>Change the Default Admin Password in admin.html</h4>
+      <p>Open <code>admin.html</code> and find the password constant near the top of the script section. Change it to a strong password before deploying:</p>
+      <div class="code-block">
+        <div class="code-header"><span class="code-lang">admin.html — Find and update this line</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
+        <pre><span class="cmt">// Find this line in admin.html and change the password:</span>
+<span class="kw">const</span> ADMIN_PASSWORD = <span class="str">'ActivEdge@Admin2025'</span>;
+
+<span class="cmt">// Replace with your own strong password:</span>
+<span class="kw">const</span> ADMIN_PASSWORD = <span class="str">'YourNewStrongPassword#Here'</span>;</pre>
+      </div>
+      <div class="info-box warn">
+        <div class="ib-icon">⚠️</div>
+        <div class="ib-text"><strong>Change the default password before deploying to production.</strong> Use a strong password with at least 12 characters, mixed case, numbers, and symbols. Store it in a password manager.</div>
+      </div>
+    </div>
+    <div class="step-card">
+      <div class="step-card-num">Admin Workflow</div>
+      <h4>Day-to-Day Admin Tasks</h4>
+      <ul>
+        <li>Visit <code>/admin.html</code> and enter your admin password.</li>
+        <li>Go to <strong>Generate Link</strong> → fill in client name, email, assessment type, and expiry.</li>
+        <li>Click <strong>Generate Assessment Link</strong> → copy the link and send to the client via email.</li>
+        <li>Use <strong>Draft Email</strong> button to open a pre-formatted email draft in your mail client.</li>
+        <li>Monitor the <strong>Submissions</strong> page for completed assessments.</li>
+        <li>Click <strong>View Report</strong> on any submission to see the full CRI score, domain breakdown, and the confidential step-by-step implementation guide (admin-only).</li>
+        <li>Use <strong>Export Data</strong> to download all submissions as JSON or CSV for reporting.</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- ─────────────────────────────────────────── -->
+<!-- MONITORING -->
+<!-- ─────────────────────────────────────────── -->
+<div class="section" id="monitoring">
+  <div class="step-eyebrow">
+    <div class="step-badge" style="background:linear-gradient(135deg,var(--teal),var(--teal-dim));">M</div>
+    <div class="step-label">Monitoring & Alerts</div>
+  </div>
+  <h2>Set Up Basic Monitoring</h2>
+  <p class="section-desc">Configure Azure Monitor alerts so you know immediately when a new assessment is submitted or if the Function App encounters errors.</p>
+
+  <div class="step-cards">
+    <div class="step-card">
+      <div class="step-card-num">Application Insights</div>
+      <h4>Enable Function App Telemetry</h4>
+      <div class="code-block">
+        <div class="code-header"><span class="code-lang">Azure CLI</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
+        <pre><span class="cmt"># Create Application Insights resource</span>
+<span class="cmd">az monitor app-insights component create \
+  --app <span class="str">ae-assessment-insights</span> \
+  --location <span class="str">southafricanorth</span> \
+  --resource-group <span class="str">activedge-assessment-rg</span> \
+  --kind <span class="str">web</span></span>
+
+<span class="cmt"># Get the instrumentation key</span>
+<span class="cmd">az monitor app-insights component show \
+  --app <span class="str">ae-assessment-insights</span> \
+  --resource-group <span class="str">activedge-assessment-rg</span> \
+  --query instrumentationKey \
+  --output tsv</span>
+
+<span class="cmt"># Link to the Function App</span>
+<span class="cmd">az functionapp config appsettings set \
+  --name <span class="str">ae-assessment-fn</span> \
+  --resource-group <span class="str">activedge-assessment-rg</span> \
+  --settings <span class="str">"APPINSIGHTS_INSTRUMENTATIONKEY=YOUR_KEY_FROM_ABOVE"</span></span></pre>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ─────────────────────────────────────────── -->
+<!-- COSTS -->
+<!-- ─────────────────────────────────────────── -->
+<div class="section" id="costs">
+  <div class="step-eyebrow">
+    <div class="step-badge" style="background:linear-gradient(135deg,var(--gold),#e8940a);">$</div>
+    <div class="step-label">Estimated Monthly Costs</div>
+  </div>
+  <h2>Azure Cost Estimate</h2>
+  <p class="section-desc">This architecture is highly cost-efficient. Most months will cost less than $15 USD — and if usage is very low, may cost as little as $2–$5 USD. All estimates below are in USD.</p>
+
+  <table class="data-table">
+    <thead><tr><th>Azure Service</th><th>Usage (Monthly Estimate)</th><th>Estimated Cost (USD/month)</th><th>Notes</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Azure Blob Storage</strong><br/>(Static Website + Data)</td><td>10 GB storage, ~1,000 requests</td><td><span class="tag tag-teal">~$0.50–$2.00</span></td><td>Static website hosting is nearly free. JSON submission storage is minimal.</td></tr>
+      <tr><td><strong>Azure Functions</strong><br/>(Consumption Plan)</td><td>~500 function executions/month</td><td><span class="tag tag-teal">~$0.00–$0.20</span></td><td>First 1 million executions per month are FREE on Consumption Plan.</td></tr>
+      <tr><td><strong>Azure Functions</strong><br/>(App Service Plan storage)</td><td>1 GB function app storage</td><td><span class="tag tag-teal">~$0.05</span></td><td>Minimal — only for function code storage.</td></tr>
+      <tr><td><strong>Azure CDN</strong><br/>(Custom Domain — optional)</td><td>~5 GB data transfer</td><td><span class="tag tag-gold">~$0.40–$1.50</span></td><td>Only needed if using custom domain. Skip for direct Azure URL.</td></tr>
+      <tr><td><strong>Application Insights</strong><br/>(Monitoring — optional)</td><td>~500 MB telemetry</td><td><span class="tag tag-teal">~$0.00–$1.50</span></td><td>First 5 GB/month free. Low usage will be within free tier.</td></tr>
+      <tr><td colspan="2" style="text-align:right;font-weight:700;color:#fff;">Total Monthly Estimate</td><td><span class="tag tag-teal" style="font-size:14px;padding:4px 12px;">$2 – $15 USD/month</span></td><td>Scales with usage. Very low at typical assessment volumes.</td></tr>
+    </tbody>
+  </table>
+
+  <div class="info-box success">
+    <div class="ib-icon">💰</div>
+    <div class="ib-text"><strong>Cost control tip:</strong> Set a budget alert at $20/month in the Azure Cost Management portal. Go to Cost Management → Budgets → Create → set $20 alert. You will receive an email if spend approaches this threshold.</div>
+  </div>
+</div>
+
+<!-- ─────────────────────────────────────────── -->
+<!-- FINAL CHECKLIST -->
+<!-- ─────────────────────────────────────────── -->
+<div class="section" id="checklist">
+  <div class="step-eyebrow">
+    <div class="step-badge" style="background:linear-gradient(135deg,var(--teal),var(--teal-dim));">✓</div>
+    <div class="step-label">Final Deployment Checklist</div>
+  </div>
+  <h2>Before Going Live — Verify Everything</h2>
+  <p class="section-desc">Go through this checklist before sharing the portal with your first client. Each item should be confirmed working.</p>
+
+  <div class="checklist" id="deployChecklist">
+    <div class="cl-item"><div class="cl-check" onclick="toggleCheck(this)">□</div><div><div class="cl-text">Azure Storage Account created with static website enabled</div><div class="cl-sub">URL format: https://[accountname].z6.web.core.windows.net/</div></div></div>
+    <div class="cl-item"><div class="cl-check" onclick="toggleCheck(this)">□</div><div><div class="cl-text">Submissions and tokens containers created (private, not public)</div><div class="cl-sub">Run: az storage container list --account-name activedgeassess --output table</div></div></div>
+    <div class="cl-item"><div class="cl-check" onclick="toggleCheck(this)">□</div><div><div class="cl-text">All 4 HTML files uploaded to $web container</div><div class="cl-sub">index.html · assessment-onprem.html · assessment-cloud.html · admin.html</div></div></div>
+    <div class="cl-item"><div class="cl-check" onclick="toggleCheck(this)">□</div><div><div class="cl-text">Azure Function App created (Node.js 18, Consumption Plan)</div><div class="cl-sub">Name: ae-assessment-fn · Region matches storage account</div></div></div>
+    <div class="cl-item"><div class="cl-check" onclick="toggleCheck(this)">□</div><div><div class="cl-text">STORAGE_CONNECTION app setting configured in Function App</div><div class="cl-sub">Contains the full storage account connection string</div></div></div>
+    <div class="cl-item"><div class="cl-check" onclick="toggleCheck(this)">□</div><div><div class="cl-text">All 3 (or 4) functions deployed and visible in Azure portal</div><div class="cl-sub">validate-token · create-token · submit-assessment · (list-submissions)</div></div></div>
+    <div class="cl-item"><div class="cl-check" onclick="toggleCheck(this)">□</div><div><div class="cl-text">CORS configured — storage website URL added to Function App allowed origins</div><div class="cl-sub">Test by opening browser DevTools and checking for CORS errors</div></div></div>
+    <div class="cl-item"><div class="cl-check" onclick="toggleCheck(this)">□</div><div><div class="cl-text">FUNCTION_BASE updated in all 4 HTML files and re-uploaded</div><div class="cl-sub">Should point to: https://ae-assessment-fn.azurewebsites.net</div></div></div>
+    <div class="cl-item"><div class="cl-check" onclick="toggleCheck(this)">□</div><div><div class="cl-text">Admin password changed from default in admin.html</div><div class="cl-sub">Never use default passwords in production</div></div></div>
+    <div class="cl-item"><div class="cl-check" onclick="toggleCheck(this)">□</div><div><div class="cl-text">End-to-end test: generate a link → open in private browser → fill assessment → submit → verify in admin portal</div><div class="cl-sub">This confirms the entire workflow is functioning correctly</div></div></div>
+    <div class="cl-item"><div class="cl-check" onclick="toggleCheck(this)">□</div><div><div class="cl-text">Token expiry test: generate a link with 24h expiry → manually expire it → confirm client sees "Link Expired" screen</div><div class="cl-sub">Confirms token validation is working correctly</div></div></div>
+    <div class="cl-item"><div class="cl-check" onclick="toggleCheck(this)">□</div><div><div class="cl-text">(Optional) Custom domain configured and HTTPS certificate issued</div><div class="cl-sub">assessment.activedgetechnologies.com → CDN endpoint → Storage website</div></div></div>
+    <div class="cl-item"><div class="cl-check" onclick="toggleCheck(this)">□</div><div><div class="cl-text">(Optional) Budget alert set at $20/month in Azure Cost Management</div><div class="cl-sub">Prevents unexpected cost overruns</div></div></div>
+    <div class="cl-item"><div class="cl-check" onclick="toggleCheck(this)">□</div><div><div class="cl-text">Admin URL bookmarked privately (never shared with clients)</div><div class="cl-sub">https://[your-url]/admin.html — internal use only</div></div></div>
+  </div>
+
+  <div class="info-box success" style="margin-top:32px;">
+    <div class="ib-icon">🚀</div>
+    <div class="ib-text"><strong>You're live!</strong> Once all items above are checked, your ActivEdge Cloud Assessment Portal is production-ready. Generate your first client link from the admin portal and start delivering measurable cloud readiness insights to your clients across Africa.</div>
+  </div>
+
+  <div style="margin-top:40px;padding:32px;background:linear-gradient(135deg,rgba(0,198,167,0.08),rgba(0,120,212,0.06));border:1px solid rgba(0,198,167,0.2);border-radius:16px;">
+    <div style="font-family:'Sora',sans-serif;font-size:18px;font-weight:700;color:#fff;margin-bottom:8px;">ActivEdge Technologies — Cloud Engineering</div>
+    <div style="font-size:14px;color:var(--muted);line-height:1.7;">No. 4b, Utomi Airie Avenue, Lekki Phase 1, Lagos · <a href="mailto:info@activedgetechnologies.com" style="color:var(--teal);text-decoration:none;">info@activedgetechnologies.com</a> · <a href="tel:+2349068444440" style="color:var(--teal);text-decoration:none;">+234 906 844 4440</a> · <a href="https://activedgetechnologies.com" target="_blank" style="color:var(--teal);text-decoration:none;">activedgetechnologies.com</a></div>
+    <div style="font-size:12px;color:#2a4060;margin-top:12px;">Partners: Microsoft Azure · Amazon Web Services · Oracle Cloud · Huawei Cloud</div>
+  </div>
+</div>
+
+</main>
+</div>
+
+<script>
+function scrollTo(id) {
+  const el = document.getElementById(id);
+  if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  document.querySelectorAll('.toc-item').forEach(i => i.classList.remove('active'));
+  event?.currentTarget?.classList.add('active');
+}
+
+function copyCode(btn) {
+  const pre = btn.closest('.code-block').querySelector('pre');
+  const text = pre.innerText || pre.textContent;
+  navigator.clipboard.writeText(text).then(() => {
+    btn.textContent = '✓ Copied!';
+    setTimeout(() => btn.textContent = 'Copy', 2000);
+  });
+}
+
+function toggleCheck(el) {
+  el.classList.toggle('done');
+  el.textContent = el.classList.contains('done') ? '✓' : '□';
+}
+
+// Scroll spy
+const sections = ['arch','step1','step2','step3','step4','step5','step6','step7','step8','step9','step10','monitoring','costs','checklist'];
+window.addEventListener('scroll', () => {
+  let current = sections[0];
+  sections.forEach(id => {
+    const el = document.getElementById(id);
+    if (el && el.getBoundingClientRect().top < 120) current = id;
+  });
+});
+</script>
+</body>
+</html>

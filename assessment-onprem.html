@@ -1,0 +1,896 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Cloud Migration Readiness Assessment — ActivEdge Technologies</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@300;400;500;600&display=swap');
+:root{
+  --navy:#0a1628;--navy-mid:#112240;--navy-light:#1a3460;
+  --teal:#00c6a7;--teal-dim:#00a88d;--gold:#f5a623;
+  --white:#f0f4ff;--muted:#7b90b8;
+  --card-bg:rgba(17,34,64,0.8);--border:rgba(0,198,167,0.2);
+  --danger:#ff5555;--warn:#f5a623;--success:#00c6a7;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Space Grotesk',sans-serif;background:var(--navy);color:var(--white);min-height:100vh;}
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(0,198,167,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(0,198,167,0.03) 1px,transparent 1px);background-size:60px 60px;pointer-events:none;z-index:0;}
+
+/* ── HEADER ── */
+.top-bar{position:sticky;top:0;z-index:100;background:rgba(10,22,40,0.95);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:14px 0;}
+.top-inner{max-width:1200px;margin:0 auto;padding:0 24px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;}
+.logo-wrap{display:flex;align-items:center;gap:12px;}
+.logo-icon{width:40px;height:40px;background:linear-gradient(135deg,var(--teal),var(--navy-light));border-radius:10px;display:flex;align-items:center;justify-content:center;font-family:'Sora',sans-serif;font-weight:800;font-size:14px;color:#fff;}
+.logo-name{font-family:'Sora',sans-serif;font-weight:700;font-size:15px;color:#fff;}
+.logo-sub{font-size:10px;color:var(--teal);letter-spacing:1.5px;text-transform:uppercase;}
+.client-badge{display:flex;align-items:center;gap:10px;padding:8px 16px;background:var(--card-bg);border:1px solid var(--border);border-radius:50px;font-size:12px;}
+.client-badge span{color:var(--muted);}
+.client-badge strong{color:#fff;}
+
+/* ── PROGRESS BAR ── */
+.progress-bar-wrap{background:rgba(0,198,167,0.08);border-bottom:1px solid var(--border);padding:12px 0;}
+.progress-inner{max-width:1200px;margin:0 auto;padding:0 24px;}
+.progress-info{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-bottom:8px;}
+.progress-track{height:6px;background:rgba(0,198,167,0.12);border-radius:99px;overflow:hidden;}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--teal),#64dfdf);border-radius:99px;transition:width 0.5s ease;}
+.section-nav{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;}
+.sec-pill{padding:5px 14px;border-radius:20px;font-size:11px;letter-spacing:0.5px;cursor:pointer;border:1px solid transparent;transition:all 0.2s;}
+.sec-pill.done{background:rgba(0,198,167,0.15);border-color:rgba(0,198,167,0.4);color:var(--teal);}
+.sec-pill.active{background:var(--teal);color:var(--navy);font-weight:700;}
+.sec-pill.pending{background:rgba(255,255,255,0.04);border-color:rgba(255,255,255,0.08);color:var(--muted);}
+
+/* ── MAIN ── */
+.main-wrap{max-width:1200px;margin:0 auto;padding:40px 24px;}
+
+/* ── SECTION HEADER ── */
+.section-header{margin-bottom:32px;}
+.section-tag{display:inline-flex;align-items:center;gap:8px;padding:5px 16px;border-radius:20px;background:rgba(0,198,167,0.1);border:1px solid rgba(0,198,167,0.25);font-size:11px;letter-spacing:1.5px;color:var(--teal);text-transform:uppercase;margin-bottom:16px;}
+.section-title{font-family:'Sora',sans-serif;font-size:28px;font-weight:700;color:#fff;margin-bottom:8px;}
+.section-desc{font-size:15px;color:var(--muted);line-height:1.6;max-width:700px;}
+.section-weight{display:inline-block;padding:4px 12px;border-radius:20px;background:rgba(245,166,35,0.1);border:1px solid rgba(245,166,35,0.3);font-size:12px;color:var(--gold);margin-top:8px;}
+
+/* ── QUESTION CARD ── */
+.q-card{background:var(--card-bg);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:28px;margin-bottom:20px;transition:border-color 0.2s;}
+.q-card.answered{border-color:rgba(0,198,167,0.25);}
+.q-num{font-size:11px;letter-spacing:1px;color:var(--muted);text-transform:uppercase;margin-bottom:8px;}
+.q-text{font-size:16px;color:#e0e8ff;line-height:1.5;margin-bottom:6px;font-weight:500;}
+.q-hint{font-size:13px;color:var(--muted);line-height:1.5;margin-bottom:20px;}
+.options-grid{display:grid;gap:10px;}
+.options-grid.cols2{grid-template-columns:repeat(2,1fr);}
+.options-grid.cols1{grid-template-columns:1fr;}
+
+.opt-btn{
+  padding:14px 18px;
+  background:rgba(10,22,40,0.6);
+  border:1px solid rgba(255,255,255,0.1);
+  border-radius:10px;
+  color:var(--muted);
+  font-size:14px;
+  font-family:'Space Grotesk',sans-serif;
+  cursor:pointer;
+  text-align:left;
+  transition:all 0.2s;
+  display:flex;align-items:center;gap:12px;
+}
+.opt-btn .opt-dot{width:16px;height:16px;border-radius:50%;border:2px solid rgba(255,255,255,0.2);flex-shrink:0;transition:all 0.2s;}
+.opt-btn:hover{background:rgba(0,198,167,0.08);border-color:rgba(0,198,167,0.3);color:#c8d8f0;}
+.opt-btn.selected{background:rgba(0,198,167,0.12);border-color:var(--teal);color:#fff;}
+.opt-btn.selected .opt-dot{background:var(--teal);border-color:var(--teal);}
+
+.score-badge{display:inline-block;padding:2px 8px;border-radius:6px;font-size:11px;margin-left:8px;font-weight:600;}
+.score-0{background:rgba(255,85,85,0.15);color:#ff9999;}
+.score-1{background:rgba(245,166,35,0.15);color:#ffd080;}
+.score-2{background:rgba(100,180,255,0.15);color:#aad0ff;}
+.score-3{background:rgba(0,198,167,0.15);color:var(--teal);}
+
+/* ── NAVIGATION ── */
+.nav-bar{display:flex;justify-content:space-between;align-items:center;padding:32px 0 16px;border-top:1px solid rgba(255,255,255,0.06);margin-top:32px;}
+.btn{padding:14px 28px;border-radius:12px;font-size:15px;font-weight:600;font-family:'Sora',sans-serif;cursor:pointer;transition:all 0.2s;display:inline-flex;align-items:center;gap:8px;letter-spacing:0.3px;}
+.btn-secondary{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:var(--muted);}
+.btn-secondary:hover{background:rgba(255,255,255,0.1);color:#fff;}
+.btn-primary{background:linear-gradient(135deg,var(--teal),#00a88d);border:none;color:var(--navy);box-shadow:0 8px 24px rgba(0,198,167,0.25);}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 12px 32px rgba(0,198,167,0.4);}
+.btn-primary:disabled{opacity:0.4;cursor:not-allowed;transform:none;}
+
+/* ── RESULTS PAGE ── */
+.results-page{display:none;}
+.results-hero{text-align:center;padding:60px 0 40px;}
+.cri-ring{width:180px;height:180px;border-radius:50%;margin:0 auto 32px;position:relative;display:flex;align-items:center;justify-content:center;flex-direction:column;}
+.cri-ring svg{position:absolute;inset:0;transform:rotate(-90deg);}
+.cri-inner{text-align:center;position:relative;z-index:1;}
+.cri-score{font-family:'Sora',sans-serif;font-size:48px;font-weight:800;color:#fff;line-height:1;}
+.cri-label{font-size:12px;color:var(--teal);letter-spacing:1px;text-transform:uppercase;margin-top:4px;}
+
+.maturity-badge{display:inline-block;padding:10px 28px;border-radius:50px;font-family:'Sora',sans-serif;font-size:18px;font-weight:700;margin-bottom:16px;}
+.mat-initial{background:rgba(255,85,85,0.15);color:#ff9999;border:1px solid rgba(255,85,85,0.3);}
+.mat-foundational{background:rgba(245,166,35,0.15);color:#ffd080;border:1px solid rgba(245,166,35,0.3);}
+.mat-emerging{background:rgba(100,180,255,0.15);color:#aad0ff;border:1px solid rgba(100,180,255,0.3);}
+.mat-advanced{background:rgba(0,198,167,0.15);color:var(--teal);border:1px solid rgba(0,198,167,0.3);}
+.mat-optimized{background:rgba(100,255,200,0.15);color:#80ffcc;border:1px solid rgba(100,255,200,0.3);}
+
+.domain-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px;margin:40px 0;}
+.domain-card{background:var(--card-bg);border:1px solid rgba(255,255,255,0.06);border-radius:14px;padding:20px 24px;}
+.domain-name{font-size:13px;font-weight:600;color:var(--muted);letter-spacing:0.5px;text-transform:uppercase;margin-bottom:10px;}
+.domain-score-wrap{display:flex;align-items:center;gap:12px;}
+.domain-score-val{font-family:'Sora',sans-serif;font-size:24px;font-weight:700;min-width:52px;}
+.domain-bar{flex:1;height:8px;background:rgba(255,255,255,0.08);border-radius:99px;overflow:hidden;}
+.domain-bar-fill{height:100%;border-radius:99px;transition:width 1s ease;}
+
+.rec-section{margin:40px 0;}
+.rec-section h3{font-family:'Sora',sans-serif;font-size:20px;font-weight:700;margin-bottom:20px;color:#fff;}
+.rec-card{background:var(--card-bg);border:1px solid rgba(255,255,255,0.06);border-radius:14px;padding:24px;margin-bottom:16px;}
+.rec-type{font-size:11px;letter-spacing:1.5px;text-transform:uppercase;font-weight:600;margin-bottom:10px;}
+.rec-type.strength{color:var(--teal);}
+.rec-type.gap{color:var(--gold);}
+.rec-type.rec{color:#aad0ff;}
+.rec-title{font-size:16px;font-weight:600;color:#fff;margin-bottom:8px;}
+.rec-body{font-size:14px;color:var(--muted);line-height:1.7;}
+
+.cta-block{background:linear-gradient(135deg,rgba(0,198,167,0.12),rgba(26,52,96,0.4));border:1px solid rgba(0,198,167,0.3);border-radius:20px;padding:48px;text-align:center;margin:40px 0;}
+.cta-block h3{font-family:'Sora',sans-serif;font-size:26px;font-weight:700;margin-bottom:12px;}
+.cta-block p{color:var(--muted);font-size:16px;margin-bottom:32px;line-height:1.6;}
+.cta-btns{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;}
+.btn-cta-main{padding:16px 36px;background:linear-gradient(135deg,var(--teal),#00a88d);border:none;border-radius:12px;color:var(--navy);font-family:'Sora',sans-serif;font-size:16px;font-weight:700;cursor:pointer;box-shadow:0 8px 24px rgba(0,198,167,0.3);}
+.btn-cta-sec{padding:16px 36px;background:transparent;border:1px solid var(--border);border-radius:12px;color:#fff;font-family:'Sora',sans-serif;font-size:15px;font-weight:600;cursor:pointer;}
+.submit-note{font-size:13px;color:#3a5070;margin-top:16px;}
+
+.section-page{display:none;}
+.section-page.active{display:block;}
+
+/* Loader */
+.loader{display:none;flex-direction:column;align-items:center;padding:80px 0;gap:24px;}
+.loader.active{display:flex;}
+.spin{width:48px;height:48px;border:3px solid rgba(0,198,167,0.2);border-top-color:var(--teal);border-radius:50%;animation:spin 0.8s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.loader p{color:var(--muted);}
+
+footer{border-top:1px solid var(--border);padding:24px;text-align:center;font-size:12px;color:#3a5070;margin-top:40px;}
+footer a{color:var(--teal);text-decoration:none;}
+
+@media(max-width:640px){
+  .options-grid.cols2{grid-template-columns:1fr;}
+  .section-title{font-size:22px;}
+  .btn{padding:12px 20px;font-size:14px;}
+  .cri-score{font-size:40px;}
+}
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div class="top-bar">
+  <div class="top-inner">
+    <div class="logo-wrap">
+      <div class="logo-icon">AE</div>
+      <div>
+        <div class="logo-name">ActivEdge Technologies</div>
+        <div class="logo-sub">Cloud Engineering · Migration Assessment</div>
+      </div>
+    </div>
+    <div class="client-badge" id="clientBadge">
+      <span>Assessing:</span>
+      <strong id="clientNameDisplay">—</strong>
+    </div>
+  </div>
+</div>
+
+<!-- PROGRESS -->
+<div class="progress-bar-wrap">
+  <div class="progress-inner">
+    <div class="progress-info">
+      <span id="progressLabel">Section 1 of 7</span>
+      <span id="progressPct">0% complete</span>
+    </div>
+    <div class="progress-track"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+    <div class="section-nav" id="sectionNav"></div>
+  </div>
+</div>
+
+<div class="main-wrap">
+
+<!-- LOADER -->
+<div class="loader" id="loader">
+  <div class="spin"></div>
+  <p>Calculating your Cloud Readiness Index…</p>
+</div>
+
+<!-- ASSESSMENT SECTIONS (generated by JS) -->
+<div id="assessmentArea"></div>
+
+<!-- RESULTS -->
+<div class="results-page" id="resultsPage">
+  <div class="results-hero">
+    <div style="font-size:11px;letter-spacing:2px;color:var(--teal);text-transform:uppercase;margin-bottom:16px;">Assessment Complete</div>
+    <h2 style="font-family:'Sora',sans-serif;font-size:36px;font-weight:800;margin-bottom:40px;">Your Cloud Readiness Report</h2>
+
+    <div class="cri-ring" id="criRing">
+      <svg viewBox="0 0 180 180" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="90" cy="90" r="78" fill="none" stroke="rgba(0,198,167,0.12)" stroke-width="12"/>
+        <circle cx="90" cy="90" r="78" fill="none" stroke="url(#criGrad)" stroke-width="12" stroke-linecap="round" stroke-dasharray="490" stroke-dashoffset="490" id="criArc"/>
+        <defs>
+          <linearGradient id="criGrad" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%" stop-color="#00c6a7"/>
+            <stop offset="100%" stop-color="#64dfdf"/>
+          </linearGradient>
+        </defs>
+      </svg>
+      <div class="cri-inner">
+        <div class="cri-score" id="criScoreDisplay">0%</div>
+        <div class="cri-label">CRI Score</div>
+      </div>
+    </div>
+
+    <div id="maturityBadge" class="maturity-badge">—</div>
+    <p id="maturityDesc" style="color:var(--muted);max-width:600px;margin:0 auto;font-size:15px;line-height:1.6;"></p>
+  </div>
+
+  <div class="domain-grid" id="domainGrid"></div>
+
+  <!-- CLIENT RECOMMENDATION (visible to customer) -->
+  <div id="clientRecommendation"></div>
+
+  <!-- SUBMIT BLOCK -->
+  <div class="cta-block">
+    <h3>Ready to begin your cloud transformation?</h3>
+    <p>Our team of certified cloud architects is ready to design your personalized migration roadmap and implementation strategy.</p>
+    <div class="cta-btns">
+      <button class="btn-cta-main" onclick="submitAssessment()">Submit & Send Report ✓</button>
+      <button class="btn-cta-sec" onclick="window.print()">Print Report</button>
+    </div>
+    <div class="submit-note" id="submitNote"></div>
+  </div>
+</div>
+
+</div><!-- /main-wrap -->
+
+<footer>
+  ActivEdge Technologies · <a href="mailto:info@activedgetechnologies.com">info@activedgetechnologies.com</a> ·
+  <a href="tel:+2349068444440">+234 906 844 4440</a> · <a href="https://activedgetechnologies.com" target="_blank">activedgetechnologies.com</a>
+</footer>
+
+<script>
+// ═══════════════════════════════════════════════════════
+//  ASSESSMENT DATA — On-Premise Cloud Readiness
+// ═══════════════════════════════════════════════════════
+const SECTIONS = [
+  {
+    id:'infra', label:'Infrastructure', weight:0.20, icon:'🏗️',
+    title:'Infrastructure & Server Environment',
+    desc:'Evaluate your current physical and virtual infrastructure, server utilization, and hardware lifecycle status.',
+    questions:[
+      { id:'i1', text:'What is the current age of the majority of your physical server hardware?',
+        hint:'Older hardware typically incurs higher maintenance costs and limits modernization options.',
+        opts:['Less than 3 years','3–5 years','5–8 years','More than 8 years / End-of-life'],
+        scores:[3,2,1,0] },
+      { id:'i2', text:'What percentage of your server workloads are virtualized (VM-based)?',
+        opts:['> 80% virtualized','50–80% virtualized','20–50% virtualized','< 20% / Mostly physical'],
+        scores:[3,2,1,0] },
+      { id:'i3', text:'Do you have documented server inventory and asset management in place?',
+        opts:['Yes — fully documented with CMDB or similar tool','Partially documented','Spreadsheet-based tracking only','No formal documentation'],
+        scores:[3,2,1,0] },
+      { id:'i4', text:'How do you manage server capacity and scaling requirements?',
+        opts:['Automated monitoring with forecasting','Manual monitoring with planned reviews','Reactive — only scale when issues arise','No formal process'],
+        scores:[3,2,1,0] },
+      { id:'i5', text:'What is your current server average CPU/memory utilization?',
+        opts:['< 30% (low — overprovisioned)','30–60% (moderate — some optimization possible)','60–80% (high — near capacity)','> 80% (at or beyond capacity)'],
+        scores:[1,3,2,0] },
+      { id:'i6', text:'Do you use Infrastructure as Code (IaC) or automation for provisioning?',
+        opts:['Yes — IaC used extensively (Terraform, Ansible, etc.)','Partial automation / some scripts','Manual provisioning with some playbooks','Fully manual — no automation'],
+        scores:[3,2,1,0] }
+    ]
+  },
+  {
+    id:'network', label:'Network', weight:0.12, icon:'🌐',
+    title:'Network & Connectivity',
+    desc:'Assess your network architecture, bandwidth capacity, and connectivity resilience.',
+    questions:[
+      { id:'n1', text:'How would you describe your current network architecture?',
+        opts:['Fully segmented with DMZ, VLANs, and modern routing','Partially segmented','Flat network with minimal segmentation','Unknown / undocumented'],
+        scores:[3,2,1,0] },
+      { id:'n2', text:'What is your internet bandwidth and WAN connectivity redundancy?',
+        opts:['Multiple redundant ISP links with failover','Primary + backup ISP link','Single ISP with no redundancy','Insufficient / unknown capacity'],
+        scores:[3,2,1,0] },
+      { id:'n3', text:'Do you have dedicated connectivity options for cloud (e.g., leased lines, MPLS)?',
+        opts:['Yes — dedicated private connectivity available','Currently evaluating/planning','Internet-only connectivity','Not considered yet'],
+        scores:[3,2,1,0] },
+      { id:'n4', text:'How is network performance and traffic monitored?',
+        opts:['Continuous monitoring with dashboards and alerting','Periodic manual reviews','Only monitored when problems occur','No monitoring in place'],
+        scores:[3,2,1,0] },
+      { id:'n5', text:'Do you have a software-defined networking (SDN) or network automation capability?',
+        opts:['Yes — SDN/automation widely deployed','Partial automation on key segments','Manual configuration — some scripts','Fully manual — CLI/GUI only'],
+        scores:[3,2,1,0] }
+    ]
+  },
+  {
+    id:'security', label:'Security', weight:0.18, icon:'🔐',
+    title:'Security & Compliance',
+    desc:'Evaluate your information security posture, access controls, compliance adherence, and incident response readiness.',
+    questions:[
+      { id:'s1', text:'Do you have a documented and enforced Identity & Access Management (IAM) policy?',
+        opts:['Yes — Role-based access, MFA enforced, regular reviews','Partially — basic policy, inconsistent enforcement','Informal — no formal IAM policy','No IAM policy or controls'],
+        scores:[3,2,1,0] },
+      { id:'s2', text:'How mature is your data encryption practice (at rest and in transit)?',
+        opts:['Encryption enforced across all data tiers and transport','Encryption applied to sensitive data only','Ad hoc encryption — inconsistently applied','No encryption in place'],
+        scores:[3,2,1,0] },
+      { id:'s3', text:'Do you have a Security Information & Event Management (SIEM) or centralized log management?',
+        opts:['Yes — SIEM operational with active monitoring and alerting','Centralized logging without real-time alerting','Decentralized / application-level logs only','No centralized logging'],
+        scores:[3,2,1,0] },
+      { id:'s4', text:'How do you manage regulatory and compliance requirements (e.g., NDPR, ISO 27001, PCI-DSS)?',
+        opts:['Formally certified or compliant with regular audits','Working toward compliance with documented gaps','Aware of requirements but limited implementation','No formal compliance program'],
+        scores:[3,2,1,0] },
+      { id:'s5', text:'Do you have a defined Incident Response (IR) plan and have you tested it recently?',
+        opts:['Documented IR plan tested within last 12 months','IR plan exists but not recently tested','Informal / undocumented response procedures','No incident response plan'],
+        scores:[3,2,1,0] },
+      { id:'s6', text:'How do you handle patch management and vulnerability remediation?',
+        opts:['Automated patching with defined SLAs per severity','Scheduled patching cycles — mostly consistent','Ad hoc patching — applied when convenient','No formal patching process'],
+        scores:[3,2,1,0] },
+      { id:'s7', text:'Do you conduct regular security assessments, penetration tests, or vulnerability scans?',
+        opts:['Yes — formal assessments at least annually','Occasional — only after incidents or changes','Rarely — limited testing conducted','Never conducted'],
+        scores:[3,2,1,0] }
+    ]
+  },
+  {
+    id:'data', label:'Data & Storage', weight:0.15, icon:'🗄️',
+    title:'Data Management & Storage',
+    desc:'Understand your data architecture, storage infrastructure, backup strategy, and data governance practices.',
+    questions:[
+      { id:'d1', text:'How would you describe your current data storage architecture?',
+        opts:['Centralized SAN/NAS with tiered storage and lifecycle policies','Centralized storage with basic management','Mix of server-attached and shared storage, unmanaged','Mostly server-attached storage with no strategy'],
+        scores:[3,2,1,0] },
+      { id:'d2', text:'Do you have a tested Backup & Disaster Recovery (DR) strategy?',
+        opts:['Documented DR plan tested within past 12 months with offsite backup','DR plan exists, backup offsite — not recently tested','Backup in place but no formal DR plan','No backup or DR strategy'],
+        scores:[3,2,1,0] },
+      { id:'d3', text:'What is your Recovery Time Objective (RTO) for critical systems?',
+        opts:['< 1 hour','1–4 hours','4–24 hours','> 24 hours / unknown'],
+        scores:[3,2,1,0] },
+      { id:'d4', text:'Do you have a formal data classification and data governance framework?',
+        opts:['Yes — data classified, ownership defined, governance enforced','Partial — classification begun but incomplete','Informal — no formal classification','No data governance framework'],
+        scores:[3,2,1,0] },
+      { id:'d5', text:'How do you currently manage database environments?',
+        opts:['Centrally managed, patched, monitored with HA configuration','Multiple DBAs with consistent policies','Siloed per application team — inconsistent standards','No formal database management'],
+        scores:[3,2,1,0] },
+      { id:'d6', text:'Have you assessed and documented the data migration complexity for your key datasets?',
+        opts:['Yes — data mapped, volumes known, migration plan drafted','Partial — some datasets mapped','Awareness of data assets but no migration readiness assessment','No data inventory or migration planning done'],
+        scores:[3,2,1,0] }
+    ]
+  },
+  {
+    id:'apps', label:'Applications', weight:0.15, icon:'⚙️',
+    title:'Application Portfolio & Modernization',
+    desc:'Review your application landscape, dependency mapping, technical debt, and cloud compatibility.',
+    questions:[
+      { id:'a1', text:'Do you maintain a formal application portfolio inventory?',
+        opts:['Yes — documented with business owner, SLAs, dependencies, and tech stack','Partial — most applications documented','Informal — spreadsheet or tribal knowledge','No application inventory'],
+        scores:[3,2,1,0] },
+      { id:'a2', text:'What percentage of your applications are vendor-supported and receiving updates?',
+        opts:['> 80% fully supported','60–80% supported','40–60% supported','< 40% — significant EOL/legacy footprint'],
+        scores:[3,2,1,0] },
+      { id:'a3', text:'Have your applications been assessed for cloud compatibility (6Rs analysis)?',
+        hint:'6Rs: Retire, Retain, Rehost, Replatform, Refactor, Rebuild',
+        opts:['Yes — formal 6Rs assessment completed for all key applications','Partial — some applications assessed','Being planned but not started','Not yet assessed'],
+        scores:[3,2,1,0] },
+      { id:'a4', text:'How tightly coupled are your applications and databases?',
+        opts:['Loosely coupled — microservices or modular architecture','Mix of modular and monolithic','Mostly monolithic but with some modularity','Tightly coupled monoliths with embedded databases'],
+        scores:[3,2,1,0] },
+      { id:'a5', text:'Do your applications use open standards, APIs, or containerization?',
+        opts:['Yes — APIs, containers, and open standards widely used','Partial — some APIs and containerization','Limited — mostly proprietary integrations','Predominantly proprietary with no containerization'],
+        scores:[3,2,1,0] },
+      { id:'a6', text:'What is your current application testing and deployment approach?',
+        opts:['CI/CD pipelines with automated testing and blue-green deployments','Some automation — manual approvals remain','Mostly manual with limited scripting','Fully manual deployments with no test automation'],
+        scores:[3,2,1,0] }
+    ]
+  },
+  {
+    id:'governance', label:'Governance & Operations', weight:0.12, icon:'📋',
+    title:'IT Governance & Operations',
+    desc:'Assess your operational processes, change management, SLA management, and IT governance maturity.',
+    questions:[
+      { id:'g1', text:'Do you have a formal IT governance framework in place (e.g., COBIT, ITIL)?',
+        opts:['Yes — formal framework implemented and audited','Partial — some ITIL/COBIT practices adopted','Informal processes — some documentation','No governance framework'],
+        scores:[3,2,1,0] },
+      { id:'g2', text:'How mature is your Change Management and Release process?',
+        opts:['Formal CAB with documented procedures and rollback plans','Structured process but inconsistently followed','Some process — primarily email-based approvals','No formal change management'],
+        scores:[3,2,1,0] },
+      { id:'g3', text:'Do you have real-time infrastructure and application monitoring with defined SLAs?',
+        opts:['Full observability — monitoring, alerting, SLAs, dashboards','Monitoring in place — no formal SLAs','Basic monitoring — mostly reactive','No monitoring infrastructure'],
+        scores:[3,2,1,0] },
+      { id:'g4', text:'Do you have a formal cloud strategy or digital transformation roadmap?',
+        opts:['Approved cloud strategy with executive sponsorship','Draft strategy under development','Informal discussions — no formal plan','No cloud or transformation strategy'],
+        scores:[3,2,1,0] },
+      { id:'g5', text:'How do you manage vendor relationships, contracts, and SLAs?',
+        opts:['Centralized vendor management with formal SLA tracking','Partially managed — some SLA tracking','Siloed by department — inconsistent management','No formal vendor management'],
+        scores:[3,2,1,0] }
+    ]
+  },
+  {
+    id:'business', label:'Business & Finance', weight:0.08, icon:'💼',
+    title:'Business Alignment & Financial Readiness',
+    desc:'Understand the organizational readiness, executive sponsorship, financial model, and change management capacity for cloud adoption.',
+    questions:[
+      { id:'b1', text:'Does cloud migration have active executive sponsorship and C-level support?',
+        opts:['Strong — CEO/CTO/CIO actively championing cloud adoption','Moderate — senior leadership supportive but not actively driving','Limited — IT-led initiative with limited business engagement','No executive sponsor — purely exploratory'],
+        scores:[3,2,1,0] },
+      { id:'b2', text:'Have you conducted a Total Cost of Ownership (TCO) or business case analysis for cloud?',
+        opts:['Yes — formal TCO with cloud vendor or partner analysis completed','Preliminary analysis done — needs refinement','High-level estimate only','No financial analysis conducted'],
+        scores:[3,2,1,0] },
+      { id:'b3', text:'How prepared is your organization for the cultural change cloud brings?',
+        opts:['Strong change management culture — training programs planned','Some readiness — pockets of resistance exist','Limited — significant change resistance anticipated','Unprepared — no change management capability'],
+        scores:[3,2,1,0] },
+      { id:'b4', text:'Do you have skilled cloud or DevOps resources in-house or access to them?',
+        opts:['Yes — certified cloud engineers/architects on staff','Some capability — training planned to bridge gaps','Limited — reliant entirely on external support','No cloud capability in-house'],
+        scores:[3,2,1,0] },
+      { id:'b5', text:'What is the primary business driver for your cloud initiative?',
+        opts:['Cost optimization + scalability + business agility (multiple drivers)','Primarily DR/resilience improvement','Cost reduction only','Compliance or regulatory requirement'],
+        scores:[3,2,1,0] }
+    ]
+  }
+];
+
+// ═══════════════════════════════════════════════════════
+//  STATE
+// ═══════════════════════════════════════════════════════
+const answers = {};
+let currentSection = 0;
+const params = new URLSearchParams(window.location.search);
+const clientCompany = params.get('company') || sessionStorage.getItem('ae_company') || 'Your Organisation';
+const clientPhone = params.get('phone') || sessionStorage.getItem('ae_phone') || '';
+const clientEmail = params.get('email') || sessionStorage.getItem('ae_email') || '';
+
+// Show client name
+document.getElementById('clientNameDisplay').textContent = clientCompany;
+
+// ═══════════════════════════════════════════════════════
+//  BUILD SECTIONS
+// ═══════════════════════════════════════════════════════
+function buildSections() {
+  const area = document.getElementById('assessmentArea');
+  const nav = document.getElementById('sectionNav');
+  SECTIONS.forEach((sec, si) => {
+    // Section page
+    const page = document.createElement('div');
+    page.className = 'section-page' + (si === 0 ? ' active' : '');
+    page.id = 'sec_' + sec.id;
+    let html = `
+      <div class="section-header">
+        <div class="section-tag">${sec.icon} Section ${si+1} of ${SECTIONS.length}</div>
+        <div class="section-title">${sec.title}</div>
+        <div class="section-desc">${sec.desc}</div>
+        <div class="section-weight">Weight: ${Math.round(sec.weight*100)}% of CRI Score</div>
+      </div>`;
+    sec.questions.forEach((q, qi) => {
+      const cols = q.opts.length <= 2 ? 'cols1' : 'cols2';
+      html += `<div class="q-card" id="qcard_${q.id}">
+        <div class="q-num">Question ${qi+1} of ${sec.questions.length}</div>
+        <div class="q-text">${q.text}</div>
+        ${q.hint ? `<div class="q-hint">💡 ${q.hint}</div>` : ''}
+        <div class="options-grid ${cols}">`;
+      q.opts.forEach((opt, oi) => {
+        const scoreLabel = ['Critical Gap','Needs Improvement','Developing','Strong'][q.scores[oi]];
+        html += `<button class="opt-btn" onclick="selectAnswer('${q.id}',${oi},'${sec.id}')" id="opt_${q.id}_${oi}">
+          <div class="opt-dot"></div>
+          <span>${opt}</span>
+        </button>`;
+      });
+      html += `</div></div>`;
+    });
+    html += `<div class="nav-bar">
+      ${si > 0 ? `<button class="btn btn-secondary" onclick="goSection(${si-1})">← Previous</button>` : '<div></div>'}
+      ${si < SECTIONS.length-1
+        ? `<button class="btn btn-primary" onclick="goSection(${si+1})" id="nextBtn_${si}">Next Section →</button>`
+        : `<button class="btn btn-primary" onclick="calculateResults()" style="background:linear-gradient(135deg,#f5a623,#e8940a);color:#1a1a1a;">Calculate My CRI Score →</button>`}
+    </div>`;
+    page.innerHTML = html;
+    area.appendChild(page);
+
+    // Nav pill
+    const pill = document.createElement('div');
+    pill.className = 'sec-pill ' + (si === 0 ? 'active' : 'pending');
+    pill.id = 'pill_' + sec.id;
+    pill.textContent = sec.label;
+    pill.onclick = () => goSection(si);
+    nav.appendChild(pill);
+  });
+  updateProgress();
+}
+
+function selectAnswer(qId, optIdx, secId) {
+  const sec = SECTIONS.find(s => s.id === secId);
+  const q = sec.questions.find(q => q.id === qId);
+  answers[qId] = { score: q.scores[optIdx], optIdx };
+  // Update UI
+  q.opts.forEach((_, i) => {
+    const btn = document.getElementById(`opt_${qId}_${i}`);
+    btn.classList.toggle('selected', i === optIdx);
+  });
+  document.getElementById('qcard_'+qId).classList.add('answered');
+  updateProgress();
+}
+
+function goSection(idx) {
+  // Validate current section has all questions answered (warn but don't block)
+  document.getElementById('sec_'+SECTIONS[currentSection].id).classList.remove('active');
+  document.getElementById('pill_'+SECTIONS[currentSection].id).className = 'sec-pill done';
+  currentSection = idx;
+  document.getElementById('sec_'+SECTIONS[idx].id).classList.add('active');
+  document.getElementById('pill_'+SECTIONS[idx].id).className = 'sec-pill active';
+  updateProgress();
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+function updateProgress() {
+  const total = SECTIONS.reduce((s,sec) => s+sec.questions.length, 0);
+  const done = Object.keys(answers).length;
+  const pct = Math.round(done/total*100);
+  document.getElementById('progressFill').style.width = pct+'%';
+  document.getElementById('progressLabel').textContent = `Section ${currentSection+1} of ${SECTIONS.length}`;
+  document.getElementById('progressPct').textContent = `${pct}% complete (${done}/${total} questions)`;
+}
+
+// ═══════════════════════════════════════════════════════
+//  SCORING
+// ═══════════════════════════════════════════════════════
+function calculateResults() {
+  document.getElementById('loader').classList.add('active');
+  document.getElementById('sec_'+SECTIONS[currentSection].id).classList.remove('active');
+  setTimeout(() => {
+    document.getElementById('loader').classList.remove('active');
+    const domainScores = {};
+    let criTotal = 0;
+    SECTIONS.forEach(sec => {
+      const maxPossible = sec.questions.length * 3;
+      let earned = 0;
+      sec.questions.forEach(q => {
+        earned += (answers[q.id]?.score ?? 0);
+      });
+      const pct = maxPossible > 0 ? Math.round(earned/maxPossible*100) : 0;
+      domainScores[sec.id] = { label: sec.label, icon: sec.icon, score: pct, weight: sec.weight };
+      criTotal += pct * sec.weight;
+    });
+    const cri = Math.round(criTotal);
+    renderResults(cri, domainScores);
+  }, 2200);
+}
+
+function getMaturiy(cri) {
+  if (cri <= 25) return { label:'Initial', cls:'mat-initial', desc:'Your organization is at the earliest stage of cloud readiness. Core foundational elements — including infrastructure documentation, security controls, and operational processes — require significant attention before a cloud migration program can be responsibly initiated.' };
+  if (cri <= 50) return { label:'Foundational', cls:'mat-foundational', desc:'Some cloud readiness elements are in place, but critical gaps remain across infrastructure, security, and governance. A structured remediation program alongside cloud onboarding will be required to reduce migration risk and ensure a stable cloud foundation.' };
+  if (cri <= 70) return { label:'Emerging', cls:'mat-emerging', desc:'Your organization has a developing cloud readiness posture. Core processes exist, but consistency, automation, and security maturity need strengthening. With targeted interventions, a phased cloud migration program can be executed with manageable risk.' };
+  if (cri <= 85) return { label:'Advanced', cls:'mat-advanced', desc:'You demonstrate strong cloud readiness across most domains. Your organization is well-positioned for a structured migration program. Remaining gaps are manageable and can be addressed in parallel with cloud adoption — particularly in governance and optimization.' };
+  return { label:'Optimized', cls:'mat-optimized', desc:'Your organization exhibits exceptional cloud readiness maturity. You are strategically positioned for accelerated cloud adoption and multi-cloud or hybrid architecture. The focus should shift to optimization, innovation, and maximizing cloud-native capabilities.' };
+}
+
+function getBarColor(score) {
+  if (score >= 75) return '#00c6a7';
+  if (score >= 50) return '#64b5f6';
+  if (score >= 30) return '#f5a623';
+  return '#ff5555';
+}
+
+function renderResults(cri, domainScores) {
+  document.getElementById('resultsPage').style.display = 'block';
+  window.scrollTo({top: document.getElementById('resultsPage').offsetTop - 80, behavior:'smooth'});
+
+  // Animate CRI arc
+  const arc = document.getElementById('criArc');
+  const circumference = 490;
+  const offset = circumference - (cri/100 * circumference);
+  setTimeout(() => { arc.style.transition = 'stroke-dashoffset 1.5s ease'; arc.style.strokeDashoffset = offset; }, 100);
+  animateCount(document.getElementById('criScoreDisplay'), 0, cri, 1500, '%');
+
+  const mat = getMaturiy(cri);
+  const badge = document.getElementById('maturityBadge');
+  badge.textContent = mat.label;
+  badge.className = 'maturity-badge ' + mat.cls;
+  document.getElementById('maturityDesc').textContent = mat.desc;
+
+  // Domain grid
+  const grid = document.getElementById('domainGrid');
+  grid.innerHTML = '';
+  Object.values(domainScores).forEach(d => {
+    const color = getBarColor(d.score);
+    grid.innerHTML += `<div class="domain-card">
+      <div class="domain-name">${d.icon} ${d.label} <span style="color:${color};float:right">${d.score >= 75 ? '✓ Strong' : d.score >= 50 ? '△ Developing' : '⚠ Needs Work'}</span></div>
+      <div class="domain-score-wrap">
+        <div class="domain-score-val" style="color:${color}">${d.score}%</div>
+        <div class="domain-bar"><div class="domain-bar-fill" style="width:${d.score}%;background:${color}"></div></div>
+      </div>
+    </div>`;
+  });
+
+  // Generate recommendations
+  renderClientRecommendation(cri, domainScores);
+}
+
+function animateCount(el, from, to, dur, suffix='') {
+  const start = performance.now();
+  function step(ts) {
+    const p = Math.min((ts-start)/dur, 1);
+    el.textContent = Math.round(from + (to-from) * easeOut(p)) + suffix;
+    if (p < 1) requestAnimationFrame(step);
+  }
+  requestAnimationFrame(step);
+}
+function easeOut(t) { return 1 - Math.pow(1-t, 3); }
+
+// ═══════════════════════════════════════════════════════
+//  CLIENT RECOMMENDATION (visible — no implementation detail)
+// ═══════════════════════════════════════════════════════
+function renderClientRecommendation(cri, domainScores) {
+  const sorted = Object.entries(domainScores).sort((a,b) => b[1].score - a[1].score);
+  const topStrengths = sorted.slice(0, 3).filter(d => d[1].score >= 50);
+  const topGaps = sorted.filter(d => d[1].score < 65).sort((a,b) => a[1].score - b[1].score).slice(0, 4);
+  const mat = getMaturiy(cri);
+
+  const gapInsights = {
+    infra: { gap:'Infrastructure dependency and hardware lifecycle risk could significantly delay or complicate a cloud migration programme.', cloud:'Cloud infrastructure eliminates hardware lifecycle constraints, enabling on-demand provisioning, elastic scaling, and reduced capital expenditure.' },
+    network: { gap:'Network architecture gaps — including insufficient segmentation and redundancy — increase risk exposure and may constrain hybrid connectivity requirements.', cloud:'Cloud networking capabilities provide software-defined, policy-driven network segmentation and enterprise-grade connectivity with built-in redundancy.' },
+    security: { gap:'Security control gaps create vulnerability exposure, compliance risk, and potential for costly breach events that are disproportionately difficult to remediate on-premise.', cloud:'Cloud platforms provide layered security services — including unified identity management, encryption at rest and in transit, and advanced threat detection — that elevate your overall security posture.' },
+    data: { gap:'Inadequate backup and DR posture leaves the organization exposed to data loss and extended recovery windows that directly impact business continuity.', cloud:'Cloud-native backup and disaster recovery capabilities deliver near-zero RPO/RTO targets at a fraction of the cost of traditional DR infrastructure.' },
+    apps: { gap:'Aging, undocumented applications and technical debt increase migration complexity and risk, and will delay time-to-value from cloud adoption.', cloud:'Cloud migration provides the catalyst and framework to modernize the application portfolio — addressing technical debt, improving performance, and enabling new product capabilities.' },
+    governance: { gap:'Governance and process maturity gaps lead to operational inefficiency, unplanned downtime, and reduced visibility into IT risk.', cloud:'Cloud platforms provide built-in governance tooling — from policy enforcement to cost visibility and compliance reporting — that significantly improves operational discipline.' },
+    business: { gap:'Limited organizational change readiness and skills gaps increase the likelihood of cloud initiative failure or stalled adoption.', cloud:'Structured cloud adoption programmes with embedded change management and skills development ensure sustainable transformation and high return on cloud investment.' }
+  };
+
+  let html = `
+  <div class="rec-section">
+    <h3>📊 Assessment Findings & Strategic Recommendations</h3>
+    <div style="background:var(--card-bg);border:1px solid var(--border);border-radius:16px;padding:28px;margin-bottom:24px;">
+      <div style="font-size:13px;letter-spacing:1px;color:var(--teal);text-transform:uppercase;margin-bottom:8px;">1. Cloud Readiness Index (CRI) Score</div>
+      <div style="font-size:32px;font-weight:800;font-family:'Sora',sans-serif;color:#fff;margin-bottom:8px;">${cri}%</div>
+      <div style="color:var(--muted);font-size:14px;line-height:1.6;">${mat.desc}</div>
+    </div>
+
+    <div style="background:var(--card-bg);border:1px solid var(--border);border-radius:16px;padding:28px;margin-bottom:24px;">
+      <div style="font-size:13px;letter-spacing:1px;color:var(--teal);text-transform:uppercase;margin-bottom:12px;">2. Maturity Level: ${mat.label}</div>
+      <div style="color:var(--muted);font-size:14px;line-height:1.6;">Your organization is classified at the <strong style="color:#fff">${mat.label}</strong> maturity stage of the cloud readiness spectrum. ${mat.desc}</div>
+    </div>`;
+
+  if (topStrengths.length > 0) {
+    html += `<div style="background:var(--card-bg);border:1px solid rgba(0,198,167,0.2);border-radius:16px;padding:28px;margin-bottom:24px;">
+      <div style="font-size:13px;letter-spacing:1px;color:var(--teal);text-transform:uppercase;margin-bottom:16px;">3. Key Strengths</div>`;
+    topStrengths.forEach(([id, d]) => {
+      const strengthMsg = {
+        infra: 'Your infrastructure environment demonstrates reasonable modernization and virtualization, providing a viable foundation for cloud workload migration.',
+        network: 'Network architecture reflects solid segmentation and connectivity practices that will support hybrid cloud integration.',
+        security: 'Security controls show commendable maturity, which will accelerate compliance and governance in a cloud environment.',
+        data: 'Data management practices — including backup and governance — reduce migration risk and improve readiness for cloud-native data services.',
+        apps: 'Application portfolio discipline and modernization momentum create a favourable environment for accelerated cloud adoption.',
+        governance: 'IT governance and operational maturity provide the structural foundation needed to manage a cloud programme effectively.',
+        business: 'Executive alignment and organizational readiness are meaningful enablers of successful, sustained cloud transformation.'
+      };
+      html += `<div class="rec-card"><div class="rec-type strength">✓ Strength — ${d.icon} ${d.label} (${d.score}%)</div><div class="rec-body">${strengthMsg[id] || 'This domain shows strong readiness indicators that will support cloud adoption.'}</div></div>`;
+    });
+    html += `</div>`;
+  }
+
+  if (topGaps.length > 0) {
+    html += `<div style="background:var(--card-bg);border:1px solid rgba(245,166,35,0.2);border-radius:16px;padding:28px;margin-bottom:24px;">
+      <div style="font-size:13px;letter-spacing:1px;color:var(--gold);text-transform:uppercase;margin-bottom:16px;">4. Key Gaps & Risk Areas</div>`;
+    topGaps.forEach(([id, d]) => {
+      const insight = gapInsights[id] || { gap:'This domain presents gaps that must be addressed to ensure a successful cloud migration.', cloud:'Cloud adoption would directly address these gaps through managed, platform-level capabilities.' };
+      html += `<div class="rec-card">
+        <div class="rec-type gap">⚠ Risk Area — ${d.icon} ${d.label} (${d.score}%)</div>
+        <div class="rec-title">Current On-Premise Risk</div>
+        <div class="rec-body" style="margin-bottom:14px;">${insight.gap}</div>
+        <div class="rec-title" style="color:var(--teal);">How Cloud Resolves This</div>
+        <div class="rec-body">${insight.cloud}</div>
+      </div>`;
+    });
+    html += `</div>`;
+  }
+
+  // Strategic observation
+  const obsText = generateObservation(cri, domainScores, mat.label);
+  html += `<div style="background:var(--card-bg);border:1px solid var(--border);border-radius:16px;padding:28px;margin-bottom:24px;">
+    <div style="font-size:13px;letter-spacing:1px;color:#aad0ff;text-transform:uppercase;margin-bottom:12px;">5. Strategic Observation</div>
+    <div style="color:var(--muted);font-size:15px;line-height:1.8;">${obsText}</div>
+  </div>`;
+
+  // Light recommendations
+  const recs = generateLightRecs(cri, domainScores);
+  html += `<div style="background:var(--card-bg);border:1px solid var(--border);border-radius:16px;padding:28px;margin-bottom:24px;">
+    <div style="font-size:13px;letter-spacing:1px;color:#aad0ff;text-transform:uppercase;margin-bottom:16px;">6. Strategic Recommendations</div>`;
+  recs.forEach((r, i) => {
+    html += `<div class="rec-card"><div class="rec-type rec">→ Recommendation ${i+1}</div><div class="rec-body" style="color:#e0e8ff;font-size:15px;">${r}</div></div>`;
+  });
+  html += `</div>`;
+
+  // CTA
+  html += `<div style="background:linear-gradient(135deg,rgba(0,198,167,0.08),rgba(26,52,96,0.3));border:1px solid rgba(0,198,167,0.25);border-radius:16px;padding:32px;margin-bottom:24px;">
+    <div style="font-size:13px;letter-spacing:1px;color:var(--teal);text-transform:uppercase;margin-bottom:12px;">7. Your Next Step with ActivEdge Technologies</div>
+    <div style="color:#e0e8ff;font-size:15px;line-height:1.8;margin-bottom:16px;">
+      Based on your <strong>${mat.label}</strong> readiness level and a CRI score of <strong>${cri}%</strong>, ActivEdge Technologies recommends engaging in a detailed Cloud Architecture Design and Migration Readiness programme.
+      <br/><br/>
+      Our cloud architects will deliver a comprehensive cloud strategy, a domain-by-domain remediation plan, a phased migration roadmap, and an implementation-ready architecture — tailored specifically to your organization's environment, compliance obligations, and business objectives across Africa's regulated technology landscape.
+      <br/><br/>
+      <em style="color:var(--teal);">"We don't just move you to the cloud — we build the right cloud for your business."</em>
+    </div>
+    <div style="display:flex;gap:16px;flex-wrap:wrap;">
+      <a href="mailto:info@activedgetechnologies.com?subject=Cloud Assessment Follow-up — ${clientCompany}&body=Hello ActivEdge Team,%0A%0APlease find attached my Cloud Readiness Assessment results. I would like to discuss next steps.%0A%0AOrganisation: ${clientCompany}%0ACRI Score: ${cri}%25%0AMaturity Level: ${mat.label}%0A%0APhone: ${clientPhone}" style="padding:14px 28px;background:linear-gradient(135deg,var(--teal),#00a88d);border-radius:10px;color:var(--navy);font-family:'Sora',sans-serif;font-size:14px;font-weight:700;text-decoration:none;display:inline-block;">📧 Contact ActivEdge</a>
+      <a href="tel:+2349068444440" style="padding:14px 28px;background:transparent;border:1px solid var(--border);border-radius:10px;color:#fff;font-family:'Sora',sans-serif;font-size:14px;font-weight:600;text-decoration:none;display:inline-block;">📞 +234 906 844 4440</a>
+    </div>
+  </div>`;
+  html += `</div>`;
+
+  document.getElementById('clientRecommendation').innerHTML = html;
+
+  // Store for admin submission
+  window._assessmentResult = { cri, domainScores, maturity: mat.label, clientCompany, clientPhone, clientEmail, timestamp: new Date().toISOString(), type: 'onprem' };
+  window._adminRec = generateAdminRecommendation(cri, domainScores, mat.label);
+}
+
+function generateObservation(cri, domainScores, maturity) {
+  const weakDomains = Object.entries(domainScores).filter(([,d]) => d.score < 50).map(([,d]) => d.label);
+  const weakStr = weakDomains.length > 0 ? ` Particular risk exposure is noted in ${weakDomains.join(', ')}.` : '';
+  const examples = {
+    'Initial': `${clientCompany} is at a nascent stage of cloud readiness. The current on-premise environment carries material risk across multiple dimensions — from infrastructure supportability to security posture and operational governance.${weakStr} Without structured intervention, any cloud migration initiative undertaken at this stage would be exposed to significant execution risk, cost overruns, and potential business disruption. The primary objective should be establishing foundational readiness before migrating critical workloads.`,
+    'Foundational': `${clientCompany} has begun establishing cloud readiness fundamentals but critical gaps remain that present migration risk.${weakStr} The organisation demonstrates awareness of cloud adoption but requires systematic attention to security, operational process maturity, and application readiness before broad migration can proceed. A remediation-first approach — targeting the weakest domains — will significantly reduce risk and improve the probability of cloud programme success.`,
+    'Emerging': `${clientCompany} shows a developing cloud readiness posture with meaningful progress in several domains.${weakStr} The organisation is approaching a readiness threshold where a structured, phased cloud migration programme is viable — provided that identified gaps are addressed in a prioritized manner. With the right partner and execution methodology, the risk profile is manageable and the transformation opportunity is significant.`,
+    'Advanced': `${clientCompany} demonstrates strong cloud readiness across the majority of evaluated domains. The organisation is well-positioned to execute a cloud migration programme with confidence.${weakStr} The remaining gaps represent manageable risk that can be addressed as part of the migration programme without delaying overall progress. ActivEdge recommends moving to architecture design and programme initiation.`,
+    'Optimized': `${clientCompany} exhibits exceptional cloud readiness maturity and is strategically positioned for accelerated cloud adoption. The organisation has invested in the foundational elements — process, security, governance, and technical architecture — that characterise high-confidence cloud migrations.${weakStr} The focus at this stage should be on cloud-native modernization, FinOps discipline, and continuous cloud optimisation to maximise long-term business value.`
+  };
+  return examples[maturity] || examples['Emerging'];
+}
+
+function generateLightRecs(cri, domainScores) {
+  const recs = [];
+  const ds = domainScores;
+  if (ds.security?.score < 65) recs.push('Establish a unified Identity and Access Management (IAM) governance framework, including multi-factor authentication enforcement and least-privilege access principles, as a foundational security requirement before any cloud adoption begins.');
+  if (ds.governance?.score < 65) recs.push('Develop and ratify a formal Cloud Governance Framework that defines accountability, policy controls, compliance requirements, and cost management disciplines aligned to your regulated operating environment.');
+  if (ds.data?.score < 65) recs.push('Adopt a structured Business Continuity and Disaster Recovery strategy that eliminates single points of failure and achieves recovery time objectives aligned to business-criticality tiers — a mandatory prerequisite for cloud migration.');
+  if (ds.apps?.score < 65) recs.push('Conduct a comprehensive Application Portfolio Assessment (6Rs framework) to classify all applications by cloud migration pathway, identify technical debt, and prioritize workloads for migration, modernization, or retirement.');
+  if (ds.infra?.score < 65) recs.push('Initiate an infrastructure rationalization programme that addresses hardware lifecycle risk, improves server virtualization coverage, and establishes a documented inventory as the basis for migration planning.');
+  if (ds.business?.score < 65) recs.push('Build organizational cloud capability through a structured cloud skills assessment and upskilling programme, ensuring internal teams can effectively own and manage cloud environments post-migration.');
+  recs.push('Engage a qualified cloud transformation partner to co-develop a cloud adoption roadmap that is sequenced, risk-managed, and directly tied to measurable business outcomes — rather than pursuing ad hoc migration efforts.');
+  if (cri < 50) recs.push('Prioritise cloud readiness remediation over migration velocity. Addressing foundational gaps now will substantially reduce programme risk, cost, and recovery effort in later phases.');
+  return recs.slice(0, 6);
+}
+
+// ═══════════════════════════════════════════════════════
+//  ADMIN RECOMMENDATION (detailed — stored, not shown to client)
+// ═══════════════════════════════════════════════════════
+function generateAdminRecommendation(cri, domainScores, maturity) {
+  const domainList = Object.entries(domainScores).map(([id,d]) => `${d.label}: ${d.score}%`).join(', ');
+  return {
+    title: `Admin Implementation Guide — ${clientCompany}`,
+    generatedAt: new Date().toISOString(),
+    cri, maturity, clientCompany, clientPhone, clientEmail,
+    domainScores: Object.fromEntries(Object.entries(domainScores).map(([k,v])=>[k,v.score])),
+    phases: generatePhases(cri, domainScores),
+    tools: generateToolMatrix(domainScores),
+    timeline: getTimeline(cri)
+  };
+}
+
+function generatePhases(cri, ds) {
+  const phases = [];
+  if (cri < 50) {
+    phases.push({ phase: 1, name: 'Foundation & Remediation', duration: '8–12 weeks', priority: 'Critical',
+      objective: 'Address critical gaps in security, governance, and infrastructure before any workload migration begins.',
+      steps: [
+        'Conduct a detailed technical discovery session across all infrastructure domains with key IT stakeholders.',
+        'Deploy a centralized SIEM/log management solution (Microsoft Sentinel or AWS Security Hub) and establish baseline security monitoring.',
+        'Implement Identity and Access Management: deploy Azure Active Directory / AWS IAM with MFA enforcement, RBAC policy definition, and privileged access management (PAM).',
+        'Complete a formal application portfolio assessment using the 6Rs framework — classify all workloads: Retire, Retain, Rehost, Replatform, Refactor, Rebuild.',
+        'Establish a Configuration Management Database (CMDB) — use ServiceNow or Azure Arc for asset inventory.',
+        'Implement automated vulnerability scanning (Qualys, Tenable, or Defender for Cloud) and define a patch management SLA.',
+        'Define a formal Backup and Disaster Recovery policy; deploy backup solutions for all Tier 1 workloads using Azure Backup or AWS Backup.',
+        'Document and ratify a Cloud Governance Framework: tagging standards, cost management policies, naming conventions, and access control policies.'
+      ],
+      tools: ['Microsoft Azure / AWS Console', 'Microsoft Sentinel / AWS Security Hub', 'Azure Active Directory / AWS IAM', 'Qualys / Tenable', 'ServiceNow / Azure Arc', 'Terraform (IaC foundation)']
+    });
+  }
+  phases.push({ phase: cri < 50 ? 2 : 1, name: 'Cloud Landing Zone & Network Setup', duration: '4–8 weeks', priority: 'High',
+    objective: 'Build the secure, scalable cloud foundation (Landing Zone) that will host all migrated workloads.',
+    steps: [
+      'Design and deploy a Cloud Landing Zone using Azure Landing Zone Accelerator or AWS Control Tower.',
+      'Configure hub-and-spoke network topology with VNet/VPC peering, network security groups, and route tables.',
+      'Establish ExpressRoute (Azure) or AWS Direct Connect for private, high-bandwidth connectivity from on-premise to cloud.',
+      'Deploy Azure Firewall / AWS Network Firewall and configure DDoS protection at the network perimeter.',
+      'Set up DNS resolution with Azure Private DNS Zones or AWS Route 53 Resolver.',
+      'Configure centralized logging — Azure Monitor Log Analytics Workspace or AWS CloudWatch Log Groups.',
+      'Implement Azure Policy / AWS Config rules to enforce compliance guardrails across all subscriptions/accounts.',
+      'Set up cost management dashboards — Azure Cost Management or AWS Cost Explorer — with budget alerts.'
+    ],
+    tools: ['Azure Landing Zone Accelerator / AWS Control Tower', 'Terraform / Bicep', 'Azure Firewall / AWS Network Firewall', 'ExpressRoute / Direct Connect', 'Azure Policy / AWS Config', 'Azure Monitor / CloudWatch']
+  });
+  phases.push({ phase: cri < 50 ? 3 : 2, name: 'Pilot Migration (Wave 1 — Non-Critical Workloads)', duration: '6–10 weeks', priority: 'High',
+    objective: 'Migrate a defined set of low-risk, non-critical workloads to validate the migration process, tooling, and runbooks.',
+    steps: [
+      'Select 3–5 low-complexity workloads (dev/test environments, file servers, intranet apps) as Wave 1 candidates.',
+      'Deploy Azure Migrate / AWS Application Discovery Service to assess workload dependencies and sizing requirements.',
+      'Execute Rehost (lift-and-shift) migrations using Azure Site Recovery / AWS Application Migration Service.',
+      'Validate performance, connectivity, and security posture post-migration; document lessons learned.',
+      'Implement auto-scaling policies and right-sizing recommendations using Azure Advisor / AWS Compute Optimizer.',
+      'Establish runbooks and standard operating procedures for cloud environment management.',
+      'Conduct a 2-week hypercare period post-migration with 24/7 monitoring.',
+      'Document decommission plan for on-premise equivalents of successfully migrated workloads.'
+    ],
+    tools: ['Azure Migrate / AWS Application Discovery Service', 'Azure Site Recovery / AWS Application Migration Service', 'Azure Advisor / AWS Compute Optimizer', 'Azure Monitor / CloudWatch', 'Terraform for IaC state management']
+  });
+  phases.push({ phase: cri < 50 ? 4 : 3, name: 'Production Workload Migration (Wave 2 & 3)', duration: '12–20 weeks', priority: 'High',
+    objective: 'Systematically migrate production workloads, databases, and business-critical applications following Wave 1 validation.',
+    steps: [
+      'Execute database migrations using Azure Database Migration Service / AWS DMS for SQL, Oracle, or PostgreSQL workloads.',
+      'Migrate Tier 1 business applications using validated runbooks from Wave 1.',
+      'Implement active-active or active-passive failover configurations for critical systems during cut-over.',
+      'Deploy application performance monitoring — Azure Application Insights / AWS X-Ray — for post-migration observability.',
+      'Execute DNS cut-over during planned maintenance windows with automated rollback capability.',
+      'Validate all integrations, APIs, and downstream dependencies post-migration.',
+      'Decommission on-premise infrastructure progressively as each wave is confirmed stable.',
+      'Review and adjust cloud cost posture weekly during migration phases using FinOps practices.'
+    ],
+    tools: ['Azure Database Migration Service / AWS DMS', 'Azure Application Insights / AWS X-Ray', 'Azure Traffic Manager / AWS Route 53', 'PowerShell / Bash automation scripts', 'Azure DevOps / GitHub Actions (CI/CD)']
+  });
+  phases.push({ phase: cri < 50 ? 5 : 4, name: 'Optimisation, FinOps & Cloud-Native Modernisation', duration: 'Ongoing from Month 6+', priority: 'Medium',
+    objective: 'Maximise value from cloud investment through continuous optimization, cost governance, and application modernisation.',
+    steps: [
+      'Implement Reserved Instances / Savings Plans for committed workloads to achieve 30–60% compute cost reduction.',
+      'Deploy auto-scaling, scheduled scaling, and spot/preemptible instances for appropriate non-critical workloads.',
+      'Containerize eligible workloads using Docker and deploy on Azure Kubernetes Service (AKS) or Amazon EKS.',
+      'Establish CI/CD pipelines using Azure DevOps or GitHub Actions for automated application deployment.',
+      'Implement Cloud FinOps practices: tagging enforcement, chargeback reporting, and waste elimination reviews.',
+      'Adopt serverless for event-driven workloads where applicable (Azure Functions / AWS Lambda).',
+      'Conduct quarterly Well-Architected Reviews against the cloud provider framework.',
+      'Establish a Cloud Centre of Excellence (CCoE) with internal ownership of cloud governance and cost accountability.'
+    ],
+    tools: ['Azure Kubernetes Service / Amazon EKS', 'Azure DevOps / GitHub Actions', 'Terraform / Pulumi', 'Azure Cost Management / AWS Cost Explorer', 'Datadog / Grafana / Prometheus', 'Azure Advisor / AWS Trusted Advisor']
+  });
+  return phases;
+}
+
+function generateToolMatrix(ds) {
+  return {
+    'Cloud Platforms': ['Microsoft Azure (primary)', 'Amazon Web Services (secondary)', 'Huawei Cloud (where relevant)'],
+    'Infrastructure & IaC': ['Terraform', 'Azure Bicep', 'Ansible', 'PowerShell DSC'],
+    'Migration Tools': ['Azure Migrate', 'Azure Site Recovery', 'AWS Application Migration Service', 'AWS DMS'],
+    'Security': ['Microsoft Defender for Cloud', 'Azure Sentinel (SIEM)', 'Azure AD / Entra ID (IAM)', 'Qualys / Tenable (Vulnerability Management)'],
+    'Monitoring & Observability': ['Azure Monitor', 'Application Insights', 'CloudWatch', 'Grafana', 'Prometheus'],
+    'DevOps & CI/CD': ['Azure DevOps', 'GitHub Actions', 'Jenkins', 'Docker', 'Kubernetes'],
+    'Cost Management': ['Azure Cost Management + Billing', 'AWS Cost Explorer', 'CloudHealth / Spot.io'],
+    'Networking': ['Azure ExpressRoute / AWS Direct Connect', 'Azure Firewall', 'Azure VPN Gateway', 'Azure Application Gateway']
+  };
+}
+
+function getTimeline(cri) {
+  if (cri < 30) return { total: '18–24 months', note: 'Extended timeline due to remediation requirements before migration can commence.' };
+  if (cri < 50) return { total: '14–20 months', note: 'Moderate timeline with a 2–3 month remediation phase before migration waves begin.' };
+  if (cri < 70) return { total: '10–14 months', note: 'Phased migration commencing within 4–6 weeks of engagement.' };
+  if (cri < 85) return { total: '8–12 months', note: 'Accelerated migration programme with minimal pre-work required.' };
+  return { total: '6–10 months', note: 'Fast-track cloud adoption leveraging existing organisational maturity.' };
+}
+
+// ═══════════════════════════════════════════════════════
+//  SUBMIT TO AZURE (or fallback local download)
+// ═══════════════════════════════════════════════════════
+async function submitAssessment() {
+  const note = document.getElementById('submitNote');
+  note.textContent = 'Submitting your assessment…';
+  const payload = {
+    ...(window._assessmentResult || {}),
+    answers,
+    adminRecommendation: window._adminRec,
+    submittedAt: new Date().toISOString()
+  };
+  try {
+    const fnUrl = 'https://ae-assessment-fn.azurewebsites.net/api/submit-assessment';
+    if (fnUrl) {
+      const res = await fetch(fnUrl, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload) });
+      if (res.ok) { note.textContent = '✓ Assessment submitted successfully. ActivEdge Technologies will contact you within 1 business day.'; return; }
+    }
+  } catch(e) {}
+  // Fallback: download JSON
+  const blob = new Blob([JSON.stringify(payload, null, 2)], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = `activedge-assessment-${clientCompany.replace(/\s+/g,'-')}-${Date.now()}.json`;
+  a.click();
+  note.textContent = '✓ Assessment data downloaded. Please email to info@activedgetechnologies.com';
+}
+
+// INIT
+buildSections();
+</script>
+</body>
+</html>
