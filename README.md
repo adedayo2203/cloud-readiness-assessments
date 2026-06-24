@@ -464,7 +464,7 @@ const fnUrl = 'https://ae-assessment-fn.azurewebsites.net/api/submit-assessment'
 
 ```javascript
 // In admin.html — change before deploying to production:
-const ADMIN_PASSWORD = 'ActivEdge@Admin2025';
+const ADMIN_PASSWORD = "";
 ```
 
 ### Admin API Key
